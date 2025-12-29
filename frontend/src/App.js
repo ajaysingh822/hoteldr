@@ -6,7 +6,7 @@ import HotelBilling from "./pages/billing/HotelBilling";
 import HotelCheckIn from "./pages/customer/HotelCheckIn";
 import HotelCheckOut from "./pages/customer/HotelCheckOut";
 import ResturantDashboard from "./pages/ResturantDashboard";
-import TableNumber from "./pages/customer/TableNumber";
+import TableNumber from "./pages/customer/BillNumber.jsx";
 // import RestaurantCheckIn from "./pages/restaurant/RestaurantCheckIn";
 // import RestaurantCheckOut from "./pages/restaurant/RestaurantCheckOut";
 // import RestaurantBilling from "./pages/billing/RestaurantBilling";
