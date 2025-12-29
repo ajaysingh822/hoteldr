@@ -5,6 +5,8 @@ import SelectType from "../src/pages/billing/SelectType";
 import HotelBilling from "./pages/billing/HotelBilling";
 import HotelCheckIn from "./pages/customer/HotelCheckIn";
 import HotelCheckOut from "./pages/customer/HotelCheckOut";
+import ResturantDashboard from "./pages/ResturantDashboard";
+import TableNumber from "./pages/customer/TableNumber";
 // import RestaurantCheckIn from "./pages/restaurant/RestaurantCheckIn";
 // import RestaurantCheckOut from "./pages/restaurant/RestaurantCheckOut";
 // import RestaurantBilling from "./pages/billing/RestaurantBilling";
@@ -26,8 +28,9 @@ export default function App() {
       {/* <Route path="/billing/restaurant" element={<RestaurantBilling />} /> */}
    
 
-<Route path="/hotel-dashboard" element={<HotelDashboard />} />
-
+    <Route path="/hotel-dashboard" element={<HotelDashboard />} />
+    <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
+    <Route path="/table-number" element={<TableNumber />} />
     </Routes>
   );
 }

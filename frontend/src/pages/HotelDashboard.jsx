@@ -1,10 +1,10 @@
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/HotelSidebar";
 
 export default function HotelDashboard() {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <Sidebar />
+   
 
       {/* Main Content */}
       <div className="flex-1 bg-amber-50 min-h-screen p-6">

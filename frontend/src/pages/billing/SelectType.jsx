@@ -31,7 +31,7 @@ export default function SelectType() {
 
           {/* Restaurant */}
           <div
-            onClick={() => navigate("/billing/restaurant")}
+            onClick={() => navigate("/restaurant-dashboard")}
             className="cursor-pointer rounded-xl border border-amber-200 p-6
                        hover:shadow-lg transition bg-white"
           >

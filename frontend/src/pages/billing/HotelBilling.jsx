@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/HotelSidebar";
 
 export default function HotelBilling() {
   const [days, setDays] = useState(1);

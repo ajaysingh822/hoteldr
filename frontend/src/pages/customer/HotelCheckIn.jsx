@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/HotelSidebar";
 import { useNavigate } from "react-router-dom";
 
 export default function HotelCheckIn() {
