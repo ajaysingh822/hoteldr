@@ -29,9 +29,14 @@ export default function RestaurantSidebar() {
       icon: PlusCircle,
     },
     {
-      name: "Hotel Check-Out",
-      path: "/hotel/check-out",
-      icon: ClipboardCheck,
+      name: "new bill",
+      path: "/table-number",
+      icon: PlusCircle,
+    },
+    {
+      name: "new bill",
+      path: "/table-number",
+      icon: PlusCircle,
     },
   ];
 
@@ -73,9 +78,9 @@ export default function RestaurantSidebar() {
         {/* Header */}
         <div className="p-6 border-b border-amber-900 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🍽️</span>
+            <span className="text-2xl"></span>
             <span className="font-bold text-lg text-white">
-              Restaurant Billing
+              DR-Restaurant Billing
             </span>
           </div>
 

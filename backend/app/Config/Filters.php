@@ -13,6 +13,7 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 
+
 class Filters extends BaseFilters
 {
     /**
@@ -70,17 +71,24 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-    public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
+    // public array $globals = [
+    //     'before' => [
+    //         // 'honeypot',
+    //         // 'csrf',
+    //         // 'invalidchars',
+    //     ],
+    //     'after' => [
+    //         // 'honeypot',
+    //         // 'secureheaders',
+    //     ],
+    // ];
+  public array $globals = [
+    'before' => [
+        'cors',
+    ],
+    'after' => [],
     ];
+
 
     /**
      * List of filter aliases that works on a

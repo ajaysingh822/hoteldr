@@ -32,7 +32,7 @@ export default function BillNumber({ tableNo = 1 }) {
       <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
 
         <h1 className="text-2xl font-bold mb-2">
-          🍽 Restaurant Bill
+          dr hotel bill number #{tableNo}
         </h1>
         <p className="mb-4 text-gray-600">
           Table No: <b>{tableNo}</b>
