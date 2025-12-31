@@ -1,133 +1,168 @@
-import { useState } from "react";
+// import { useState } from "react";
 import Sidebar from "../../components/HotelSidebar";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+// import Sidebar from "../../components/Sidebar";
 
 export default function HotelBilling() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [guest, setGuest] = useState(null);
+  const [charges, setCharges] = useState([]);
+  const [extraTotal, setExtraTotal] = useState(0);
+  const [advance, setAdvance] = useState(0);
+
   const [days, setDays] = useState(1);
-  const [rate, setRate] = useState(2000);
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [loading, setLoading] = useState(false);
 
-  const roomTotal = days * rate;
-  const gst = Math.round(roomTotal * 0.12);
-  const grandTotal = roomTotal + gst;
+  /* ================= FETCH DATA ================= */
+  useEffect(() => {
+    fetch(`/api/guest/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setGuest({
+          ...data.guest,
+          rate: Number(data.guest.rate) || 0,
+        });
 
+        setCharges(data.charges || []);
+        setExtraTotal(Number(data.extra_total) || 0);
+        setAdvance(Number(data.advance_paid) || 0);
+      });
+  }, [id]);
+
+  if (!guest) {
+    return (
+      <div className="flex min-h-screen bg-amber-50">
+        <Sidebar />
+        <div className="flex-1 p-6">Loading...</div>
+      </div>
+    );
+  }
+
+  /* ================= CALCULATIONS ================= */
+  const roomTotal = guest.rate * Number(days);
+  const totalBill = roomTotal + extraTotal;
+  const remainingPayable = Math.max(0, totalBill - advance);
+  const refundAmount = advance > totalBill ? advance - totalBill : 0;
+
+  /* ================= CHECKOUT ================= */
+  const confirmPayment = async () => {
+    setLoading(true);
+
+    const res = await fetch(`/api/checkout/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        days,
+        total: remainingPayable, // ✅ ONLY REMAINING
+        payment_method: paymentMethod,
+      }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (data.status === "success") {
+      navigate("/hotel/check-out");
+    } else {
+      alert("Payment failed");
+    }
+  };
+
+  /* ================= UI ================= */
   return (
-    <div className="flex">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-amber-50">
       <Sidebar />
 
-      {/* Main Content */}
-      <div className="flex-1 min-h-screen bg-amber-50 p-6">
-        <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6">
+      <div className="flex-1 p-6">
+        <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
 
-          {/* Header */}
-          <h1 className="text-2xl font-bold text-amber-900 mb-6">
-            🏨 Hotel Billing
+          <h1 className="text-xl font-bold mb-4">
+            💰 Billing & Payment
           </h1>
 
-          {/* Guest + Room Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Guest Name
-              </label>
-              <input
-                className="w-full border rounded-lg px-4 py-2"
-                placeholder="Enter guest name"
-              />
-            </div>
+          <p><b>Guest:</b> {guest.name}</p>
+          <p><b>Room:</b> {guest.room_no}</p>
+          <p><b>Rate / Day:</b> ₹{guest.rate}</p>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Mobile No
-              </label>
-              <input
-                className="w-full border rounded-lg px-4 py-2"
-                placeholder="Enter mobile number"
-              />
-            </div>
+          <label className="block mt-4">Days Stayed</label>
+          <input
+            type="number"
+            min="1"
+            value={days}
+            onChange={(e) => setDays(Number(e.target.value))}
+            className="border px-3 py-2 w-full rounded"
+          />
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Room No
-              </label>
-              <input
-                className="w-full border rounded-lg px-4 py-2"
-                placeholder="Room number"
-              />
-            </div>
+          <hr className="my-4" />
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Room Type
-              </label>
-              <select className="w-full border rounded-lg px-4 py-2">
-                <option>Standard</option>
-                <option>Deluxe</option>
-                <option>AC</option>
-              </select>
-            </div>
-          </div>
+          <h2 className="font-bold mb-2">🧾 Bill Details</h2>
 
-          {/* Charges */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                No of Days
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={days}
-                onChange={(e) => setDays(Number(e.target.value))}
-                className="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
+          <table className="w-full border text-sm mb-4">
+            <tbody>
+              <tr>
+                <td className="border p-2">
+                  Room Charge ({guest.rate} × {days} days)
+                </td>
+                <td className="border p-2 text-right">
+                  ₹{roomTotal.toFixed(2)}
+                </td>
+              </tr>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Room Charge / Day
-              </label>
-              <input
-                type="number"
-                value={rate}
-                onChange={(e) => setRate(Number(e.target.value))}
-                className="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
+              {charges.map((c, i) => (
+                <tr key={i}>
+                  <td className="border p-2">{c.title}</td>
+                  <td className="border p-2 text-right">
+                    ₹{Number(c.amount).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
 
-            <div className="bg-amber-100 rounded-lg p-4">
-              <p className="text-sm">Room Total</p>
-              <p className="text-xl font-bold">
-                ₹ {roomTotal}
-              </p>
-            </div>
-          </div>
+              <tr className="font-bold bg-gray-100">
+                <td className="border p-2">Extra Charges Total</td>
+                <td className="border p-2 text-right">
+                  ₹{extraTotal.toFixed(2)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-          {/* Bill Summary */}
-          <div className="border-t pt-4 mb-6">
-            <div className="flex justify-between mb-2">
-              <span>Room Charges</span>
-              <span>₹ {roomTotal}</span>
-            </div>
-            <div className="flex justify-between mb-2">
-              <span>GST (12%)</span>
-              <span>₹ {gst}</span>
-            </div>
-            <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span>₹ {grandTotal}</span>
-            </div>
-          </div>
+          <p><b>Total Bill:</b> ₹{totalBill.toFixed(2)}</p>
+          <p className="text-green-700">
+            <b>Advance Paid:</b> ₹{advance.toFixed(2)}
+          </p>
 
-          {/* Actions */}
-          <div className="flex gap-4">
-            <button className="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800">
-              Generate Bill
-            </button>
+          {refundAmount > 0 && (
+            <p className="text-blue-700 font-semibold">
+              Refund Amount: ₹{refundAmount.toFixed(2)}
+            </p>
+          )}
 
-            <button className="border px-6 py-2 rounded-lg rounded-lg">
-              Cancel
-            </button>
-          </div>
+          <h2 className="mt-2 text-lg font-bold text-red-700">
+            Remaining Payable: ₹{remainingPayable.toFixed(2)}
+          </h2>
+
+          <label className="block mt-4">Payment Method</label>
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="border px-3 py-2 w-full rounded"
+          >
+            <option value="cash">Cash</option>
+            <option value="upi">UPI</option>
+            <option value="card">Card</option>
+          </select>
+
+          <button
+            onClick={confirmPayment}
+            disabled={loading}
+            className="mt-6 bg-green-600 text-white px-6 py-2 rounded w-full disabled:opacity-50"
+          >
+            {loading ? "Processing..." : "Confirm Payment & Checkout"}
+          </button>
 
         </div>
       </div>

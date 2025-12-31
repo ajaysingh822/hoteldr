@@ -14,6 +14,11 @@ import TableNumber from "./pages/customer/BillNumber.jsx";
 // Admin Imports
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
+
+import HotelAddCharges from "../src/pages/billing/HotelAddcharges.jsx";
+import HotelHistory from "./pages/customer/HotelHistory.jsx";
+import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
+
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
 
@@ -25,6 +30,7 @@ export default function App() {
       />
       <Route path="/login" element={<Login />} />
       <Route path="/select-billing" element={<SelectType />} />
+
       // hotel routes
       <Route path="/billing/hotel" element={<HotelBilling />} />
       <Route path="/hotel/check-in" element={<HotelCheckIn />} />
@@ -36,6 +42,18 @@ export default function App() {
     
     //admin routes can be added here
     <Route path="/admin-dashboard" element={<AdminDashboard />} />
+
+
+      {/* <Route path="/billing/hotel" element={<HotelBilling />} /> */}
+         <Route path="/hotel/check-in" element={<HotelCheckIn />} />
+      <Route path="/hotel/check-out" element={<HotelCheckOut />} />
+         <Route path="/hotel/billing/:id" element={<HotelBilling />} />
+      {/* <Route path="/billing/restaurant" element={<RestaurantBilling />} /> */}
+   
+ <Route path="/hotel/charges/:id" element={<HotelAddCharges />} />
+<Route path="/hotel-dashboard" element={<HotelDashboard />} />
+<Route path= "/hotel/history" element={<HotelHistory/>} />
+<Route path="/hotel/history/:billId" element={<HotelHistoryDetail/>} />
 
 
     </Routes>

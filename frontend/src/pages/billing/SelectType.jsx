@@ -16,7 +16,7 @@ export default function SelectType() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Hotel */}
           <div
-            onClick={() => navigate("/billing/hotel")}
+            onClick={() => navigate("/hotel-dashboard")}
             className="cursor-pointer rounded-xl border border-amber-200 p-6
                        hover:shadow-lg transition bg-white"
           >

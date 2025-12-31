@@ -26,6 +26,8 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
+        //  'cors' => \CodeIgniter\Filters\Cors::class,
+        'cors' => \App\Filters\CorsFilter::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -71,6 +73,7 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
+
     // public array $globals = [
     //     'before' => [
     //         // 'honeypot',
@@ -86,9 +89,11 @@ class Filters extends BaseFilters
     'before' => [
         'cors',
     ],
-    'after' => [],
-    ];
+    'after' => [
+        'cors'
+    ],
 
+];
 
     /**
      * List of filter aliases that works on a

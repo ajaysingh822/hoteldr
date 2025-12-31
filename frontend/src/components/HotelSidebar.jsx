@@ -33,6 +33,11 @@ export default function AdminSidebar() {
       path: "/hotel/check-out",
       icon: ClipboardCheck,
     },
+    {
+      name: "View History",
+      path: "/hotel/history",
+      icon: ClipboardCheck,
+    },
   ];
 
   const logout = () => {
@@ -75,7 +80,7 @@ export default function AdminSidebar() {
           <div className="flex items-center gap-2">
             <span className="text-2xl">🏨</span>
             <span className="font-bold text-lg text-white">
-              Hotel Billing
+            DR Hotel Billing
             </span>
           </div>
 

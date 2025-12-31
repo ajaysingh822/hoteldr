@@ -1,129 +1,131 @@
+
 import Sidebar from "../components/HotelSidebar";
 
+
+import { useEffect, useState } from "react";
+// import Sidebar from "../components/Sidebar";
+// import bg1 from "../../public/bg.png";
+
 export default function HotelDashboard() {
+  const [stats, setStats] = useState(null);
+  const [bills, setBills] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/dashboard")
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          setStats(data.stats);
+          setBills(data.recentBills || []);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  if (!stats) {
+    return (
+      <div className="flex min-h-screen bg-amber-50">
+        <Sidebar />
+        <div className="flex-1 p-6">
+          <p>Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex">
+    <div  className="flex min-h-screen bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: "url('/Bg1.png')",
+  }} >
       {/* Sidebar */}
    
 
-      {/* Main Content */}
-      <div className="flex-1 bg-amber-50 min-h-screen p-6">
-        {/* Header */}
+      {/* Main Content (SAME AS AddCharges) */}
+      <div className="md:ml-64 flex-1 p-6">
         <h1 className="text-2xl font-bold text-amber-900 mb-6">
           🏨 Hotel Dashboard
         </h1>
 
         {/* Top Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Rooms Occupied</p>
-            <p className="text-2xl font-bold text-red-700">18</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Rooms Available</p>
-            <p className="text-2xl font-bold text-green-700">7</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Check-ins Today</p>
-            <p className="text-2xl font-bold text-red-700">9</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Check-outs Today</p>
-            <p className="text-2xl font-bold text-red-700">6</p>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <Card title="Rooms Occupied" value={stats.occupied} color="red" />
+          <Card title="Rooms Available" value={stats.available} color="green" />
+          <Card title="Check-ins Today" value={stats.todayCheckins} color="red" />
+          <Card title="Check-outs Today" value={stats.todayCheckouts} color="red" />
         </div>
 
         {/* Revenue */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Today Revenue</p>
-            <p className="text-2xl font-bold text-green-700">
-              ₹ 52,400
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Monthly Revenue</p>
-            <p className="text-2xl font-bold text-green-700">
-              ₹ 8,75,200
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">Pending Payments</p>
-            <p className="text-2xl font-bold text-red-700">
-              ₹ 12,800
-            </p>
-          </div>
+          <Revenue title="Today Revenue" value={stats.todayRevenue} />
+          <Revenue title="Monthly Revenue" value={stats.monthlyRevenue} />
+          <Revenue title="Pending Payments" value={stats.pending} danger />
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            ⚡ Quick Hotel Actions
-          </h2>
-
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="/billing/hotel"
-              className="bg-red-700 text-white px-5 py-2 rounded-lg hover:bg-red-800"
-            >
-              ➕ New Hotel Bill
-            </a>
-
-            <button className="border px-5 py-2 rounded-lg">
-              🛏️ Manage Rooms
-            </button>
-
-            <button className="border px-5 py-2 rounded-lg">
-              📋 Guest List
-            </button>
-          </div>
-        </div>
-
-        {/* Recent Hotel Bills */}
+        {/* Recent Bills */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            🧾 Recent Hotel Bills
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">🧾 Recent Hotel Bills</h2>
 
-          <table className="w-full text-sm border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-3 py-2 text-left">Bill No</th>
-                <th className="border px-3 py-2 text-left">Guest</th>
-                <th className="border px-3 py-2 text-left">Room</th>
-                <th className="border px-3 py-2 text-left">Amount</th>
-                <th className="border px-3 py-2 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border px-3 py-2">H-1045</td>
-                <td className="border px-3 py-2">Rahul Sharma</td>
-                <td className="border px-3 py-2">204</td>
-                <td className="border px-3 py-2">₹ 6,800</td>
-                <td className="border px-3 py-2 text-green-600">
-                  Paid
-                </td>
-              </tr>
-              <tr>
-                <td className="border px-3 py-2">H-1046</td>
-                <td className="border px-3 py-2">Amit Verma</td>
-                <td className="border px-3 py-2">108</td>
-                <td className="border px-3 py-2">₹ 4,200</td>
-                <td className="border px-3 py-2 text-red-600">
-                  Pending
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {bills.length === 0 ? (
+            <p className="text-sm text-gray-500">No recent bills</p>
+          ) : (
+            <table className="w-full text-sm border">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border px-3 py-2 text-left">Bill No</th>
+                  <th className="border px-3 py-2 text-left">Guest</th>
+                  <th className="border px-3 py-2 text-left">Room</th>
+                  <th className="border px-3 py-2 text-left">Amount</th>
+                  <th className="border px-3 py-2 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.map(b => (
+                  <tr key={b.id}>
+                    <td className="border px-3 py-2">H-{b.id}</td>
+                    <td className="border px-3 py-2">{b.name}</td>
+                    <td className="border px-3 py-2">{b.room_no}</td>
+                    <td className="border px-3 py-2">
+                      ₹ {Number(b.amount).toLocaleString()}
+                    </td>
+                    <td
+                      className={`border px-3 py-2 font-bold ${
+                        b.status === "paid" ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {b.status}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-
       </div>
+    </div>
+  );
+}
+
+/* ---------- Reusable ---------- */
+
+function Card({ title, value, color }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-5">
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className={`text-2xl font-bold text-${color}-700`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Revenue({ title, value, danger }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-5">
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className={`text-2xl font-bold ${danger ? "text-red-700" : "text-green-700"}`}>
+        ₹ {Number(value).toLocaleString()}
+      </p>
     </div>
   );
 }
