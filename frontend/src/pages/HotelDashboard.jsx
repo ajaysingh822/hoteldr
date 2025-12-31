@@ -38,7 +38,7 @@ export default function HotelDashboard() {
   style={{
     backgroundImage: "url('/Bg1.png')",
   }} >
-      {/* Sidebar */}
+      <Sidebar/>
    
 
       {/* Main Content (SAME AS AddCharges) */}
