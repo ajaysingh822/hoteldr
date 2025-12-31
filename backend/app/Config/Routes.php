@@ -14,3 +14,4 @@ $routes->post('api/payment/save', 'PaymentController::save');
 $routes->options('api/payment/save', function () {
     return service('response')->setStatusCode(200);
 });
+$routes->get('api/admin/total-sale', 'AdminController::totalSale');
