@@ -1,120 +1,152 @@
-import { useState } from "react";
+import RestaurentSidebar from "../../components/ResturantSidebar";
+// import { Sidebar } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function BillNumber({ tableNo = 1 }) {
-  const [items, setItems] = useState([]);
-  const [itemName, setItemName] = useState("");
-  const [qty, setQty] = useState(1);
+export default function TableNumber() {
+  const [tables, setTables] = useState(() => {
+    const saved = localStorage.getItem("restaurant_tables");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [tableNo, setTableNo] = useState("");
+  const [item, setItem] = useState("");
   const [price, setPrice] = useState("");
 
-  const addItem = () => {
-    if (!itemName || !price) return;
+  // save running tables in localStorage (temporary)
+  useEffect(() => {
+    localStorage.setItem("restaurant_tables", JSON.stringify(tables));
+  }, [tables]);
 
-    setItems([
-      ...items,
-      {
-        id: Date.now(),
-        name: itemName,
-        qty: Number(qty),
-        price: Number(price),
-        total: Number(qty) * Number(price),
-      },
-    ]);
+  // add new customer / table
+  const addTable = () => {
+    if (!tableNo) return;
+    setTables([...tables, { tableNo, items: [] }]);
+    setTableNo("");
+  };
 
-    setItemName("");
-    setQty(1);
+  // add item to a table
+  const addItem = (index) => {
+    if (!item || !price) return;
+
+    const updated = [...tables];
+    updated[index].items.push({
+      name: item,
+      price: Number(price),
+    });
+    setTables(updated);
+    setItem("");
     setPrice("");
   };
 
-  const grandTotal = items.reduce((sum, i) => sum + i.total, 0);
+  // calculate total
+  const getTotal = (items) =>
+    items.reduce((sum, i) => sum + i.price, 0);
+
+  // PAY + SAVE TO DATABASE
+ const payTable = async (index) => {
+  const totalAmount = getTotal(tables[index].items);
+
+  try {
+    const res = await fetch("http://localhost:8080/api/payment/save", {
+      method: "POST",
+       mode: "cors", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: totalAmount }),
+    });
+
+    const data = await res.json();   // 👈 IMPORTANT LINE
+
+    if (!res.ok) {
+      throw new Error("API error");
+    }
+
+    // table close
+    const updated = tables.filter((_, i) => i !== index);
+    setTables(updated);
+
+    alert("Payment saved ₹" + totalAmount);
+    console.log("API response:", data);
+  } catch (err) {
+    console.error("Fetch error:", err);
+    alert("Payment failed (frontend)");
+  }
+};
+
 
   return (
-    <div className="min-h-screen bg-amber-50 p-6">
-      <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
-
-        <h1 className="text-2xl font-bold mb-2">
-          dr hotel bill number #{tableNo}
-        </h1>
-        <p className="mb-4 text-gray-600">
-          Table No: <b>{tableNo}</b>
-        </p>
-
-        {/* ADD ITEM */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <input
-            type="text"
-            placeholder="Item name"
-            className="border p-2 col-span-2"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Qty"
-            className="border p-2"
-            value={qty}
-            onChange={(e) => setQty(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Price"
-            className="border p-2"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
-
+    <div className="flex  bg-gray-100 p-6">
+      < RestaurentSidebar/>
+     
+<div className="md:ml-64 flex-1  p-2 md:p-6 ">
+      {/* ADD CUSTOMER */}
+      <div className="flex gap-2 mb-6">
+        <input
+          placeholder="Table No"
+          className="border p-2"
+          value={tableNo}
+          onChange={(e) => setTableNo(e.target.value)}
+        />
         <button
-          onClick={addItem}
-          className="mb-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          onClick={addTable}
+          className="bg-blue-600 text-white px-4 rounded"
         >
-          ➕ Add Item
-        </button>
-
-        {/* BILL TABLE */}
-        <table className="w-full border mb-4">
-          <thead className="bg-amber-200">
-            <tr>
-              <th className="border p-2 text-left">Item</th>
-              <th className="border p-2 text-center">Qty</th>
-              <th className="border p-2 text-right">Rate</th>
-              <th className="border p-2 text-right">Amount</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {items.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="p-4 text-center text-gray-500">
-                  No items added
-                </td>
-              </tr>
-            ) : (
-              items.map((i) => (
-                <tr key={i.id}>
-                  <td className="border p-2">{i.name}</td>
-                  <td className="border p-2 text-center">{i.qty}</td>
-                  <td className="border p-2 text-right">₹ {i.price}</td>
-                  <td className="border p-2 text-right">₹ {i.total}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {/* TOTAL */}
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-lg font-semibold">Grand Total</span>
-          <span className="text-xl font-bold">₹ {grandTotal}</span>
-        </div>
-
-        {/* PAY */}
-        <button
-          onClick={() => alert("Payment Done. Table Free ✅")}
-          className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded text-lg font-semibold"
-        >
-          PAY & CLOSE TABLE
+          Add Customer
         </button>
       </div>
-    </div>
+
+      {/* ACTIVE TABLES */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {tables.map((t, index) => (
+          <div key={index} className="bg-white p-4 shadow rounded">
+            <h2 className="font-bold mb-2">
+              Table {t.tableNo}
+            </h2>
+
+            <div className="flex gap-2 mb-2">
+              <input
+                placeholder="Item"
+                className="border p-1 flex-1"
+                value={item}
+                onChange={(e) => setItem(e.target.value)}
+              />
+              <input
+                placeholder="Price"
+                type="number"
+                className="border p-1 w-24"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              <button
+                onClick={() => addItem(index)}
+                className="bg-green-600 text-white px-2"
+              >
+                Add
+              </button>
+            </div>
+
+            <ul className="text-sm mb-2">
+              {t.items.map((i, idx) => (
+                <li key={idx}>
+                  {i.name} - ₹{i.price}
+                </li>
+              ))}
+            </ul>
+
+            <div className="font-semibold mb-2">
+              Total: ₹{getTotal(t.items)}
+            </div>
+
+            <button
+              onClick={() => payTable(index)}
+              className="bg-red-600 text-white w-full py-1 rounded"
+            >
+              PAY
+            </button>
+          </div>
+        ))}
+      </div>
+    </div></div>
   );
 }

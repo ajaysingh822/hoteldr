@@ -4,7 +4,11 @@ export default function SelectType() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50 px-4">
+    <div className="min-h-screen flex items-center bg-cover justify-center bg-amber-50 px-4"
+     style={{
+    backgroundImage: "url('/bg3.png')",
+  }} >
+    
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8 text-center">
         <h1 className="text-2xl font-bold text-amber-900 mb-2">
           Select Billing Type

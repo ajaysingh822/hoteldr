@@ -97,7 +97,7 @@ export default function AdminSidebar() {
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => (
             <Link
-              key={item.path}
+             key={item.path}
               to={item.path}
               onClick={() => setOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
@@ -116,6 +116,23 @@ export default function AdminSidebar() {
 
         {/* Logout */}
         <div className="p-5 border-t border-amber-900">
+           <nav className="flex-1 p-4 space-y-2">
+            <Link
+              to={"/restaurant-dashboard"}
+              onClick={() => setOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                ${
+                  isActive()
+                    ? "bg-red-700 text-white shadow-md"
+                    : "text-amber-200 hover:bg-amber-900 hover:text-white"
+                }
+              `}
+            >
+              <LayoutDashboard size={20} />
+              <span className="font-medium">Go to Restaurent</span>
+            </Link>
+        
+        </nav>
           <button
             onClick={logout}
             className="flex w-full items-center gap-3 px-4 py-3 rounded-lg

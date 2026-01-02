@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/HotelSidebar";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate ,useLocation } from "react-router-dom";
+import {toast} from "react-hot-toast";
 export default function HotelCheckOut() {
   const [guests, setGuests] = useState([]);
   const navigate = useNavigate();
-
+  const location = useLocation();
   useEffect(() => {
     fetch("/api/guests/checked-in")
       .then(res => res.json())
@@ -16,17 +16,22 @@ export default function HotelCheckOut() {
       });
   }, []);
 
+  useEffect(() => {
+    if (location.state?.checkoutSuccess) {
+      toast.success("Checkout Successfully ✅");
+    }
+  }, []);
   return ( 
     <div className="flex  bg-cover bg-center" 
     >
       <Sidebar />
 
-      <div className="flex-1 bg-amber-50 min-h-screen md:ml-64 p-6 bg-cover bg-center"  
+      <div className="flex-1 bg-amber-50 min-h-screen md:ml-64  md:p-6 bg-cover bg-center"  
         style={{
     backgroundImage: "url('/bg2.png')",
   }} 
       >
-        <div className="max-w-6xl mx-auto bg-white md:p-6 rounded-xl shadow">
+        <div className="max-w-6xl md:my-0 my-12  mx-auto bg-white md:p-6 rounded-xl shadow">
           <h1 className="text-2xl font-bold mb-6">
             ✅ Hotel Check-Out
           </h1>
@@ -43,6 +48,8 @@ export default function HotelCheckOut() {
                   <th className="border p-2">Extra Charges</th>
                   <th className="border p-2">Total Till Now</th>
                   <th className="border p-2">Action</th>
+                   <th className="border p-2">Checked In Name</th>
+
                 </tr>
               </thead>
 
@@ -76,6 +83,7 @@ export default function HotelCheckOut() {
                           Billing
                         </button>
                       </td>
+                      <td className="border p-2">{g.reception}</td>
                     </tr>
                   );
                 })}

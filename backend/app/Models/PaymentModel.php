@@ -6,5 +6,6 @@ use CodeIgniter\Model;
 class PaymentModel extends Model
 {
     protected $table = 'restaurant_payments';
-    protected $allowedFields = ['amount'];
+    protected $allowedFields = ['amount',  'checkout_receptionist'];
+    
 }

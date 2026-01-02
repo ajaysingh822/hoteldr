@@ -12,6 +12,9 @@ class GuestModel extends Model
     protected $allowedFields = [
   'name',
   'mobile',
+  'comingto',
+  'comingfrom',
+  'id_number',
   'id_image',
   'room_no',
   'id_type',
@@ -21,6 +24,8 @@ class GuestModel extends Model
   'check_in_time',
   'members',
 'vehicle_no',
+'reception'
+
 
 ];
 

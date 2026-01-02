@@ -34,15 +34,15 @@ export default function HotelDashboard() {
   }
 
   return (
-    <div  className="flex min-h-screen bg-cover bg-center bg-no-repeat"
+    <div  className="flex  min-h-screen bg-cover bg-center bg-no-repeat"
   style={{
-    backgroundImage: "url('/Bg1.png')",
+    backgroundImage: "url('/bg3.png')",
   }} >
       <Sidebar/>
    
 
       {/* Main Content (SAME AS AddCharges) */}
-      <div className="md:ml-64 flex-1 p-6">
+      <div className="md:ml-64 flex-1  p-2 md:p-6">
         <h1 className="text-2xl font-bold text-amber-900 mb-6">
           🏨 Hotel Dashboard
         </h1>
@@ -59,7 +59,7 @@ export default function HotelDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Revenue title="Today Revenue" value={stats.todayRevenue} />
           <Revenue title="Monthly Revenue" value={stats.monthlyRevenue} />
-          <Revenue title="Pending Payments" value={stats.pending} danger />
+          {/* <Revenue title="Pending Payments" value={stats.pending} danger /> */}
         </div>
 
         {/* Recent Bills */}
@@ -77,6 +77,7 @@ export default function HotelDashboard() {
                   <th className="border px-3 py-2 text-left">Room</th>
                   <th className="border px-3 py-2 text-left">Amount</th>
                   <th className="border px-3 py-2 text-left">Status</th>
+                  <th className="border px-3 py-2 text-left">Check Out By</th>
                 </tr>
               </thead>
               <tbody>
@@ -95,7 +96,16 @@ export default function HotelDashboard() {
                     >
                       {b.status}
                     </td>
+                     <td
+  className={`border px-3 py-2 font-medium ${
+    b.checkout_receptionist?.trim() ? "text-gray-800" : "text-red-600"
+  }`}
+>
+  {b.checkout_receptionist?.trim() ? b.checkout_receptionist : "Advance"}
+</td>
+
                   </tr>
+
                 ))}
               </tbody>
             </table>

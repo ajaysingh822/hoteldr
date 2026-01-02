@@ -14,31 +14,6 @@ class HotelDashboardController extends BaseController
         ->where('status', 'checked_in')
         ->countAllResults();
 
-
-//        $pendingIds = $db->table('guests')
-//     ->select('id')
-//     ->where('status', 'checked_in')
-//     ->get()
-//     ->getResultArray();
-
-//     $guestIds = array_column($pendingIds, 'id');
-
-//     $amounts = $db->table('extra_charges')
-//     ->select('amount')
-//     ->whereIn('guest_id', $guestIds)
-//     ->get()
-//     ->getResultArray();
-
-//     $rate =$db->table('guests')
-//     ->select('rate')
-//     ->whereIn('status' , 'checked_in')
-//     ->get()
-//     ->getResultArray();
-
-// $pending = $amounts + $rate ;
-    // $pending = $db->table('extra_charges')
-    //  ->select
-
 $today = date('Y-m-d');
 
 // ✅ Check-ins Today
@@ -50,14 +25,8 @@ $todayCheckins = $db->table('guests')
 $todayCheckouts = $db->table('guests')
     ->where('DATE(check_out_time)', $today)
     ->countAllResults();
+ 
 
-
-    
-// ✅ Check-outs Today
-// $todayCheckouts = $db->table('guests')
-//     ->where('status', 'checked_out')
-//     ->where('DATE(updated_at)', $today)
-//     ->countAllResults();
 
     $totalRooms = 25;
     $available = $totalRooms - $occupied;
@@ -84,8 +53,9 @@ $todayCheckouts = $db->table('guests')
         ->getRow()
         ->amount ?? 0;
 
+
     $recentBills = $db->table('payments p')
-        ->select('p.id, g.name, g.room_no, p.amount, p.status')
+        ->select('p.id, g.name, g.room_no, p.amount, p.status , p.checkout_receptionist')
         ->join('guests g', 'g.id = p.guest_id')
         ->orderBy('p.id', 'DESC')
         ->limit(5)
@@ -101,7 +71,8 @@ $todayCheckouts = $db->table('guests')
         'todayCheckouts' => $todayCheckouts, 
             'todayRevenue' => $todayRevenue,
             'monthlyRevenue' => $monthlyRevenue,
-            'pending' => $pending,
+          
+            // 'checkout_receptionist' => $checkout_receptionist,
         ],
         'recentBills' => $recentBills
     ]);

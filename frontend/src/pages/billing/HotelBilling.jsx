@@ -1,8 +1,6 @@
-// import { useState } from "react";
 import Sidebar from "../../components/HotelSidebar";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// import Sidebar from "../../components/Sidebar";
 
 export default function HotelBilling() {
   const { id } = useParams();
@@ -15,6 +13,7 @@ export default function HotelBilling() {
 
   const [days, setDays] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [receptionout , setReceptionout] = useState("");
   const [loading, setLoading] = useState(false);
 
   /* ================= FETCH DATA ================= */
@@ -50,6 +49,10 @@ export default function HotelBilling() {
 
   /* ================= CHECKOUT ================= */
   const confirmPayment = async () => {
+    if (!receptionout.trim()) {
+    alert("Checkout receptionist name required");
+    return;
+  }
     setLoading(true);
 
     const res = await fetch(`/api/checkout/${id}`, {
@@ -59,6 +62,7 @@ export default function HotelBilling() {
         days,
         total: remainingPayable, // ✅ ONLY REMAINING
         payment_method: paymentMethod,
+        checkout_receptionist: receptionout,
       }),
     });
 
@@ -66,7 +70,11 @@ export default function HotelBilling() {
     setLoading(false);
 
     if (data.status === "success") {
-      navigate("/hotel/check-out");
+    navigate("/hotel/check-out", {
+      
+  state: { checkoutSuccess: true }
+});
+
     } else {
       alert("Payment failed");
     }
@@ -155,7 +163,15 @@ export default function HotelBilling() {
             <option value="upi">UPI</option>
             <option value="card">Card</option>
           </select>
-
+         <div>
+         <label className="block mb-1 font-medium">Reciptionist Name</label>
+              <input
+                className="border px-4 py-2 rounded-lg w-full"
+                value={receptionout}
+                onChange={(e) => setReceptionout(e.target.value)}
+                placeholder="Enter current receptionist name" 
+              />
+  </div>
           <button
             onClick={confirmPayment}
             disabled={loading}
@@ -163,7 +179,6 @@ export default function HotelBilling() {
           >
             {loading ? "Processing..." : "Confirm Payment & Checkout"}
           </button>
-
         </div>
       </div>
     </div>

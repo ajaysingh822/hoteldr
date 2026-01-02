@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../src/pages/login.jsx";
 import SelectType from "../src/pages/billing/SelectType";
-
+import { Toaster } from "react-hot-toast";
 // Hotel Imports
 import HotelDashboard from "./pages/HotelDashboard";
 import HotelBilling from "./pages/billing/HotelBilling";
@@ -22,14 +22,22 @@ import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
 
-  return (
+  return (<>
+<div className=" w-full">
+    <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
+      </div>
     <Routes>
       <Route
         path="/"
         element={<Navigate to={loggedIn ? "/select-billing" : "/login"} />}
       />
       <Route path="/login" element={<Login />} />
-      <Route path="/select-billing" element={<SelectType />} />
+      <Route path="/select-type" element={<SelectType />} />
 
       // hotel routes
       <Route path="/billing/hotel" element={<HotelBilling />} />
@@ -56,6 +64,6 @@ export default function App() {
 <Route path="/hotel/history/:billId" element={<HotelHistoryDetail/>} />
 
 
-    </Routes>
+    </Routes></>
   );
 }

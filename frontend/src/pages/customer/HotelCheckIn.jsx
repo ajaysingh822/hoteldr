@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import Sidebar from "../../components/HotelSidebar";
-import { useNavigate } from "react-router-dom";
-
+// import { useNavigate } from "react-router-dom";  
+import { toast } from "react-hot-toast"
 
 export default function HotelCheckIn() {
   const [name, setName] = useState("");
@@ -16,7 +16,10 @@ export default function HotelCheckIn() {
   const [idImage, setIdImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
-
+  const [comingfrom , setComingfrom] = useState("");
+  const [comingto , setComingto] = useState("");
+  const[IdNumber , setIdNumber] =useState("");
+  const [reception , setReception] = useState("");
   const handleCheckIn = async (e) => {
     e.preventDefault();
 
@@ -28,12 +31,8 @@ export default function HotelCheckIn() {
       members <= 0 ||
       rate <= 0
     ) {
-      setAlert({
-        type: "error",
-        message: "Please fill all required details correctly",
-      });
-      setTimeout(() => setAlert(null), 3000);
-      return;
+      toast.error("Please fill all required details correctly")
+      
     }
 
     try {
@@ -48,6 +47,10 @@ export default function HotelCheckIn() {
       formData.append("rate", rate);
       formData.append("id_type", idType);
       formData.append("advance", advance);
+      formData.append("comingfrom" , comingfrom.trim());
+      formData.append("comingto" , comingto.trim());
+      formData.append("id_number" , IdNumber.trim() ) ;
+      formData.append("reception" , reception.trim() );
       if (idImage) formData.append("id_image", idImage);
 
       const res = await fetch("/api/check-in", {
@@ -58,10 +61,8 @@ export default function HotelCheckIn() {
       const data = await res.json();
 
       if (data.status === "success") {
-        setAlert({
-          type: "success",
-          message: "Customer checked in successfully ✅",
-        });
+        toast.success("Customer checked in successfully ✅")
+     
 
         setName("");
         setMobile("");
@@ -72,14 +73,17 @@ export default function HotelCheckIn() {
         setIdType("");
         setAdvance(500)
         setIdImage(null);
+        setComingfrom("");
+        setComingto("");
+        setIdNumber("");
+        setReception("");
       } else {
-        setAlert({
-          type: "error",
-          message: data.message || "Check-in failed",
-        });
+        toast.error(data.message || "Check-in failed")
+       
       }
     } catch {
-      setAlert({ type: "error", message: "Server error" });
+      toast.error("Server error")
+     
     } finally {
       setLoading(false);
       setTimeout(() => setAlert(null), 3000);
@@ -95,7 +99,7 @@ export default function HotelCheckIn() {
       <Sidebar />
 
       <div className="md:ml-64 flex-1 p-6 bg-cover bg-center" >
-        <div className="max-w-4xl mx-auto bg-gradient-to-br bg-red-100 p-6 rounded-xl bg-cover bg-center shadow"
+        <div className="max-w-4xl mx-auto bg-gradient-to-br bg-white p-6 rounded-xl bg-cover bg-center shadow"
         
         >
           <h1 className="text-2xl font-bold mb-6">➕ Hotel Check-In</h1>
@@ -135,7 +139,22 @@ export default function HotelCheckIn() {
                 onChange={(e) => setMobile(e.target.value)}
               />
             </div>
-
+ <div>
+              <label className="block mb-1 font-medium">Coming From (Optional)</label>
+              <input
+                className="border px-4 py-2 rounded-lg w-full"
+                value={comingfrom}
+                onChange={(e) => setComingfrom(e.target.value)}
+              />
+            </div>
+             <div>
+              <label className="block mb-1 font-medium">Coming To (Optional)</label>
+              <input
+                className="border px-4 py-2 rounded-lg w-full"
+                value={comingto}
+                onChange={(e) => setComingto(e.target.value)}
+              />
+            </div>
             {/* Members */}
             <div>
               <label className="block mb-1 font-medium">
@@ -202,7 +221,7 @@ export default function HotelCheckIn() {
             </div>
 
             {/* ID Image */}
-            <div className="md:col-span-2">
+            <div className="">
               <label className="block mb-1 font-medium">Upload ID Proof</label>
               <input
                 type="file"
@@ -211,7 +230,16 @@ export default function HotelCheckIn() {
                 onChange={(e) => setIdImage(e.target.files[0])}
               />
             </div>
-<div className="md:col-span-2">
+            <div >
+     <label className="block mb-1 font-medium">ID Number</label>
+             <input
+  type="text"
+  placeholder="ID NUMBER"
+  value={IdNumber}
+  onChange={(e) => setIdNumber(e.target.value)}
+  className="border px-4 py-2 rounded"
+/> </div>
+<div >
      <label className="block mb-1 font-medium">Advance Payment</label>
              <input
   type="number"
@@ -219,9 +247,16 @@ export default function HotelCheckIn() {
   value={advance}
   onChange={(e) => setAdvance(Number(e.target.value))}
   className="border px-4 py-2 rounded"
-/> 
-
-            </div> 
+/>  </div> 
+     
+ <div>
+         <label className="block mb-1 font-medium">Reciptionist Name</label>
+              <input
+                className="border px-4 py-2 rounded-lg w-full"
+                value={reception}
+                onChange={(e) => setReception(e.target.value)}
+              />
+  </div>
             {/* Button */}
             <div className="md:col-span-2">
               <button

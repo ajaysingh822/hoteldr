@@ -5,134 +5,154 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 
 class HistoryController extends BaseController
-{
-   
-    public function index()
-    {
-        $db = \Config\Database::connect();
-
-        $page  = (int) ($this->request->getGet('page') ?? 1);
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
-
-        $search = $this->request->getGet('q');
-        $date   = $this->request->getGet('date'); // 🔥 YYYY-MM-DD
-
-        $builder = $db->table('payments p')
-            ->select('
-                p.id as bill_id,
-                p.amount,
-                p.payment_method,
-                p.created_at,
-                g.name,
-            
-    g.mobile,
-    g.room_no,
-    g.members,
-    g.vehicle_no,
-    g.rate,
-    g.check_in_time,
-    g.check_out_time
-            ')
-            ->join('guests g', 'g.id = p.guest_id')
-            ->where('p.type', 'final')
-            ->orderBy('p.id', 'DESC');
-
-        // 🔍 Search filter
-        if ($search) {
-            $builder->groupStart()
-                ->like('g.name', $search)
-                ->orLike('g.room_no', $search)
-                ->orLike('p.id', $search)
-                ->groupEnd();
-        }
-
-        // 📅 Date filter
-        if ($date) {
-            $builder->where('DATE(p.created_at)', $date);
-        }
-
-        $total = $builder->countAllResults(false);
-
-        $rows = $builder
-            ->limit($limit, $offset)
-            ->get()
-            ->getResultArray();
-
-        return $this->response->setJSON([
-            'status' => 'success',
-            'rows' => $rows,
-            'pagination' => [
-                'page' => $page,
-                'limit' => $limit,
-                'total' => $total,
-                'total_pages' => ceil($total / $limit)
-            ]
-        ]);
-   
-    }
-    public function view($billId)
+{public function index()
 {
     $db = \Config\Database::connect();
 
-    // payment + guest
-    $bill = $db->table('payments p')
+    $page  = (int) ($this->request->getGet('page') ?? 1);
+    $limit = 20;
+    $offset = ($page - 1) * $limit;
+
+    $search = $this->request->getGet('q');
+    $date   = $this->request->getGet('date');
+
+    $builder = $db->table('guests g')
         ->select('
-            p.id as bill_id,
-            p.amount as paid_amount,
-            p.payment_method,
-            p.created_at as paid_at,
             g.id as guest_id,
             g.name,
+            g.mobile,
             g.room_no,
+            g.members,
+            g.vehicle_no,
             g.rate,
             g.check_in_time,
-            g.check_out_time
+            MAX(
+          CASE 
+            WHEN p.type = "final" 
+            THEN p.checkout_receptionist 
+          END
+        ) as checkout_receptionist,
+            g.check_out_time,
+            (
+          g.rate * 
+          GREATEST(1, DATEDIFF(g.check_out_time, g.check_in_time))
+          + IFNULL(SUM(ec.amount),0)
+        ) as grand_total
         ')
-        ->join('guests g', 'g.id = p.guest_id')
-        ->where('p.id', $billId)
+          ->join('extra_charges ec', 'ec.guest_id = g.id', 'left')
+          ->join('payments p', 'p.guest_id = g.id ', 'left')
+        ->where('g.status', 'checked_out')
+        ->groupBy('g.id')
+        ->orderBy('g.id', 'DESC');
+
+    // 🔍 Search
+    if ($search) {
+        $builder->groupStart()
+            ->like('g.name', $search)
+            ->orLike('g.room_no', $search)
+            ->orLike('g.mobile', $search)
+            ->groupEnd();
+    }
+
+    // 📅 Checkout date filter
+    if ($date) {
+        $builder->where('DATE(g.check_out_time)', $date);
+    }
+
+    $total = $builder->countAllResults(false);
+
+    $rows = $builder
+        ->limit($limit, $offset)
+        ->get()
+        ->getResultArray();
+
+    return $this->response->setJSON([
+        'status' => 'success',
+        'rows' => $rows,
+        'pagination' => [
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'total_pages' => ceil($total / $limit)
+        ]
+    ]);
+}
+public function view($guestId)
+{
+    $db = \Config\Database::connect();
+
+    $guest = $db->table('guests')
+        ->where('id', $guestId)
         ->get()
         ->getRowArray();
 
-    if (!$bill) {
+    if (!$guest) {
         return $this->response->setJSON([
             'status' => 'error',
-            'message' => 'Bill not found'
+            'message' => 'Guest not found'
         ]);
     }
 
-    // extra charges
+    $payments = $db->table('payments')
+        ->where('guest_id', $guestId)
+        ->get()
+        ->getResultArray();
+    $advancePaid = 0;
+    $finalPaid = 0;
+    
+    foreach ($payments as $p) {
+      
+        if ($p['type'] === 'advance') {
+            $advancePaid += $p['amount'];
+            //   $checkout_receptionist = 'checkout_receptionist';
+        } 
+        else {
+            $finalPaid += $p['amount'];
+             $checkout_receptionist = $p['checkout_receptionist'];
+        }
+    }
+
+    $totalPaid = $advancePaid + $finalPaid;
+
     $charges = $db->table('extra_charges')
-        ->where('guest_id', $bill['guest_id'])
+        ->where('guest_id', $guestId)
         ->get()
         ->getResultArray();
 
     $extraTotal = array_sum(array_column($charges, 'amount'));
 
-    // days stayed (safe)
+    // 🕒 Days calculation
     $days = 1;
-    if (!empty($bill['check_in_time']) && !empty($bill['check_out_time'])) {
-        $in  = new \DateTime($bill['check_in_time']);
-        $out = new \DateTime($bill['check_out_time']);
+    if ($guest['check_in_time'] && $guest['check_out_time']) {
+        $in  = new \DateTime($guest['check_in_time']);
+        $out = new \DateTime($guest['check_out_time']);
         $days = max(1, $in->diff($out)->days);
     }
 
-    $roomTotal = $bill['rate'] * $days;
+    $roomTotal  = $guest['rate'] * $days;
     $grandTotal = $roomTotal + $extraTotal;
+    $balance    = $grandTotal - $totalPaid;
 
     return $this->response->setJSON([
         'status' => 'success',
         'bill' => [
-            'bill_id' => $bill['bill_id'],
-            'guest' => $bill['name'],
-            'room_no' => $bill['room_no'],
-            'payment_method' => $bill['payment_method'],
-            'paid_at' => $bill['paid_at'],
+            'guest_id' => $guest['id'],
+            'guest' => $guest['name'],
+            'mobile' => $guest['mobile'],
+            'room_no' => $guest['room_no'],
+            'members' => $guest['members'],
+            'vehicle_no' => $guest['vehicle_no'],
+            'rate' => $guest['rate'],
             'days' => $days,
-            'rate' => $bill['rate'],
             'room_total' => $roomTotal,
             'extra_total' => $extraTotal,
             'grand_total' => $grandTotal,
+            'advance_paid' => $advancePaid,
+            'final_paid' => $finalPaid,
+            'total_paid' => $totalPaid,
+            'checkout_receptionist' => $checkout_receptionist,
+            'check_in_time' => $guest['check_in_time'],
+            'check_out_time' => $guest['check_out_time'],
         ],
         'charges' => $charges
     ]);
