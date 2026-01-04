@@ -34,10 +34,11 @@ export default function BillPrint() {
       <div className="receipt">
 
         {/* ===== HEADER ===== */}
-        <div className="center bold">{bill.shop_name}</div>
+        <div className="center text-xl bold">{bill.shop_name}</div>
         <div className="center">
           {bill.address}<br />
-          {bill.city}
+          {bill.city}<br/>
+          MOB:{bill.tel}
         </div>
 
         <div className="line" />
@@ -150,7 +151,7 @@ export default function BillPrint() {
         <div className="line" />
 
         <div className="center">TAX ALREADY INCLUDED</div>
-        <div className="center bold">* THANK YOU *</div>
+        <div className="center bold">* THANK YOU  || VISIT AGAIN*</div>
 
         {/* ===== BUTTONS ===== */}
         <button className="print-btn" onClick={() => window.print()}>
