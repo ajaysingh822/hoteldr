@@ -118,6 +118,7 @@ class GuestController extends BaseController
 
         return $this->response->setJSON([
             'status' => 'success',
+            // 'mobile_no'=> $mobile_no,
             'guest' => $guest,
             'charges' => $charges,
             'extra_total' => $extraTotal,
@@ -157,6 +158,7 @@ if ($checkoutReceptionist === '') {
                 'checkout_receptionist'  => $checkoutReceptionist,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
+            
         }
 
         return $this->response->setJSON([

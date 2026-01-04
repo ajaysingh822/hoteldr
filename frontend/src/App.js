@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import HotelAddCharges from "../src/pages/billing/HotelAddcharges.jsx";
 import HotelHistory from "./pages/customer/HotelHistory.jsx";
 import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
+import BillPrint from "./pages/billing/BillPrint.jsx";
 
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
@@ -32,6 +33,7 @@ export default function App() {
       />
       </div>
     <Routes>
+        <Route path="/bill/:billNo" element={<BillPrint/>} />
       <Route
         path="/"
         element={<Navigate to={loggedIn ? "/select-billing" : "/login"} />}

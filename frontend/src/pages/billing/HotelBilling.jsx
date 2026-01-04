@@ -69,16 +69,44 @@ export default function HotelBilling() {
     const data = await res.json();
     setLoading(false);
 
-    if (data.status === "success") {
-    navigate("/hotel/check-out", {
-      
-  state: { checkoutSuccess: true }
-});
-
-    } else {
-      alert("Payment failed");
+  if (data.status === "success") {
+  navigate(`/bill/${id}`, {
+    state: {
+      bill: {
+        bill_no: id,
+        shop_name: "DR HOTEL & RESTAURENT",
+        address: " Maksi Road Bypass",
+        city: "DEWAS M.P (455001)",
+        date: new Date().toLocaleString(),
+        operator: receptionout,
+        room_no: guest.room_no,
+        room_charges : guest.rate,
+        guest: guest.name,
+        room_Total : roomTotal,
+        days : days ,
+        mobile_no : guest.mobile_no,
+        items: charges,
+        sub_total: totalBill,
+        cgst: 0,
+        sgst: 0,
+        total: totalBill,
+        advance,
+        payable: remainingPayable
+      }
     }
-  };
+  });
+}}
+
+//        {
+//     navigate("/hotel/check-out", {
+      
+//   state: { checkoutSuccess: true }
+// });
+
+//     } else {
+//       alert("Payment failed");
+//     }
+//   };
 
   /* ================= UI ================= */
   return (

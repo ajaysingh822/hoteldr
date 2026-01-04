@@ -1,0 +1,86 @@
+/* ===== WRAPPER ===== */
+.receipt-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== RECEIPT ===== */
+.receipt {
+  width: 80mm;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #000;
+}
+
+/* ===== TEXT ===== */
+.center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.info div {
+  margin: 2px 0;
+}
+
+/* ===== LINE ===== */
+.line {
+  border-top: 1px dashed #000;
+  margin: 6px 0;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+th {
+  text-align: left;
+  border-bottom: 1px dashed #000;
+}
+
+td:nth-child(2),
+td:nth-child(3),
+td:nth-child(4) {
+  text-align: right;
+}
+
+/* ===== TOTALS ===== */
+.totals {
+  margin-top: 4px;
+}
+
+.totals .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+/* ===== BUTTONS ===== */
+.print-btn,
+.back-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 6px;
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .print-btn,
+  .back-btn {
+    display: none !important;
+  }
+}
