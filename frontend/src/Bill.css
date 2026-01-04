@@ -13,6 +13,7 @@
   color: #000;
 }
 
+
 /* ===== TEXT ===== */
 .center {
   text-align: center;
@@ -59,11 +60,14 @@ td:nth-child(4) {
   margin-top: 4px;
 }
 
+/* ===== TOTALS (FIXED GAP) ===== */
 .totals .row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto; /* 🔥 magic */
+  column-gap: 6px;                 /* control gap here */
   padding: 2px 0;
 }
+
 
 /* ===== BUTTONS ===== */
 .print-btn,
@@ -83,4 +87,21 @@ td:nth-child(4) {
   .back-btn {
     display: none !important;
   }
+
+  .receipt,
+  .receipt * {
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+@page {
+  size: 80mm auto;
+  margin: 0;
+}
+
+.receipt {
+  width: 72mm;
+  display: inline-block;
 }
