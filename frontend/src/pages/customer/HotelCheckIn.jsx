@@ -32,7 +32,7 @@ export default function HotelCheckIn() {
       rate <= 0
     ) {
       toast.error("Please fill all required details correctly")
-      
+      return;
     }
 
     try {

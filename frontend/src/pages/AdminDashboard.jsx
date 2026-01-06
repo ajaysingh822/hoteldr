@@ -55,7 +55,7 @@ export default function AdminDashboard() {
 
   const fetchTotal = async () => {
     const res = await fetch(
-      `http://localhost:8080/api/admin/total-sale?from=${from}&to=${to}`
+      `/api/admin/total-sale?from=${from}&to=${to}`
     );
     const data = await res.json();
     setTotal(data.total);

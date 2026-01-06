@@ -84,8 +84,7 @@ class GuestController extends BaseController
         $db = \Config\Database::connect();
 
         $guests = $db->table('guests g')
-            ->select('g.id, g.name, g.room_no, g.rate, g.reception , 
-                IFNULL(SUM(ec.amount),0) as extra_total', )
+            ->select('g.id, g.name, g.room_no, g.rate, g.reception, IFNULL(SUM(ec.amount),0) as extra_total')
             ->join('extra_charges ec', 'ec.guest_id = g.id', 'left')
             ->where('g.status', 'checked_in')
             ->groupBy('g.id')

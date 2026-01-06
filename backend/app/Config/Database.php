@@ -5,7 +5,6 @@ namespace Config;
 use CodeIgniter\Database\Config;
 
 /**
- * Database Configuration
  */
 class Database extends Config
 {
@@ -55,7 +54,7 @@ class Database extends Config
         'DSN'          => '',
         'hostname'     => 'localhost',
         'username'     => 'root',
-        'password'     => 'root',
+        'password'     => '',
         'database'     => 'hoteldr',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\PaymentModel;
@@ -10,17 +11,18 @@ class PaymentController extends ResourceController
     {
         $data = $this->request->getJSON(true);
 
-        if (!isset($data['amount'])) {
-            return $this->fail('Amount missing');
+        if (!isset($data['amount']) || !isset($data['payment_mode'])) {
+            return $this->fail('Amount or payment mode missing');
         }
 
         $model = new PaymentModel();
         $model->insert([
-            'amount' => $data['amount']
+            'amount'        => $data['amount'],
+            'payment_mode'  => $data['payment_mode'],
+            'payment_time'  => date('Y-m-d H:i:s'),
+            'status'        => 'PAID'
         ]);
 
-        return $this->respond([
-            'status' => 'success'
-        ]);
+        return $this->respond(['status' => 'success']);
     }
 }

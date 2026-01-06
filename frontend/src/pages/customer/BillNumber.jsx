@@ -47,7 +47,7 @@ export default function TableNumber() {
   const totalAmount = getTotal(tables[index].items);
 
   try {
-    const res = await fetch("http://localhost:8080/api/payment/save", {
+    const res = await fetch("/api/payment/save", {
       method: "POST",
        mode: "cors", 
       headers: {
@@ -56,11 +56,11 @@ export default function TableNumber() {
       body: JSON.stringify({ amount: totalAmount }),
     });
 
-    const data = await res.json();   // 👈 IMPORTANT LINE
-
     if (!res.ok) {
       throw new Error("API error");
     }
+
+    const data = await res.json();
 
     // table close
     const updated = tables.filter((_, i) => i !== index);
@@ -77,7 +77,7 @@ export default function TableNumber() {
 
   return (
     <div className="flex  bg-gray-100 p-6">
-      < RestaurentSidebar/>
+      <RestaurentSidebar/>
      
 <div className="md:ml-64 flex-1  p-2 md:p-6 ">
       {/* ADD CUSTOMER */}

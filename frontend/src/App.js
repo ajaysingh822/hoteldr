@@ -14,6 +14,10 @@ import TableNumber from "./pages/customer/BillNumber.jsx";
 // Admin Imports
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
+//resrtuarant bill print
+import RestaurantBillPrint from "./pages/billing/RestaurantBillPrint";
+
+
 
 import HotelAddCharges from "../src/pages/billing/HotelAddcharges.jsx";
 import HotelHistory from "./pages/customer/HotelHistory.jsx";
@@ -24,48 +28,44 @@ export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
 
   return (<>
-<div className=" w-full">
-    <Toaster 
+    <div className="w-full">
+      <Toaster 
         position="top-center"
         toastOptions={{
           duration: 3000,
         }}
       />
-      </div>
+    </div>
     <Routes>
-        <Route path="/bill/:billNo" element={<BillPrint/>} />
+      {/* Bill Print */}
+      <Route path="/bill/:billNo" element={<BillPrint/>} />
+      
+      {/* Default Route */}
       <Route
         path="/"
-        element={<Navigate to={loggedIn ? "/select-billing" : "/login"} />}
+        element={<Navigate to={loggedIn ? "/select-type" : "/login"} />}
       />
+      
+      {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/select-type" element={<SelectType />} />
 
-      // hotel routes
-      <Route path="/billing/hotel" element={<HotelBilling />} />
+      {/* Hotel Routes */}
       <Route path="/hotel/check-in" element={<HotelCheckIn />} />
       <Route path="/hotel/check-out" element={<HotelCheckOut />} />
+      <Route path="/hotel/billing/:id" element={<HotelBilling />} />
+      <Route path="/hotel/charges/:id" element={<HotelAddCharges />} />
       <Route path="/hotel-dashboard" element={<HotelDashboard />} />
-      // restaurant routes
-    <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
-    <Route path="/table-number" element={<TableNumber />} />
-    
-    //admin routes can be added here
-    <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/hotel/history" element={<HotelHistory/>} />
+      <Route path="/hotel/history/:billId" element={<HotelHistoryDetail/>} />
 
-
-      {/* <Route path="/billing/hotel" element={<HotelBilling />} /> */}
-         <Route path="/hotel/check-in" element={<HotelCheckIn />} />
-      <Route path="/hotel/check-out" element={<HotelCheckOut />} />
-         <Route path="/hotel/billing/:id" element={<HotelBilling />} />
-      {/* <Route path="/billing/restaurant" element={<RestaurantBilling />} /> */}
-   
- <Route path="/hotel/charges/:id" element={<HotelAddCharges />} />
-<Route path="/hotel-dashboard" element={<HotelDashboard />} />
-<Route path= "/hotel/history" element={<HotelHistory/>} />
-<Route path="/hotel/history/:billId" element={<HotelHistoryDetail/>} />
-
-
-    </Routes></>
-  );
+      {/* Restaurant Routes */}
+      <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
+      <Route path="/table-number" element={<TableNumber />} />
+      <Route path="/billing/restaurant" element={<RestaurantBillPrint />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+    </Routes>
+  </>);
 }
