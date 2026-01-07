@@ -12,6 +12,11 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 //auth
 $routes->post('api/login', 'AuthController::login');
 
+    $routes->post('api/admin/login', 'AdminController::login');
+    $routes->post('api/admin/logout', 'AdminController::logout');
+    $routes->get('me', 'AdminController::me');
+
+
 $routes->group('api', ['filter' => 'auth'], function($routes) {
 
   $routes->get('/', 'Home::index');
@@ -19,14 +24,22 @@ $routes->group('api', ['filter' => 'auth'], function($routes) {
   $routes->post('payment/save', 'PaymentController::save');
 
   $routes->get('admin/total-sale', 'AdminController::totalSale');
+  //admin restaurent
+$routes->get('extra-charges/today', 'ExtraChargeController::todayTotal');
+$routes->get('extra-charges/month', 'ExtraChargeController::monthTotal');
+$routes->get('extra-charges/range', 'ExtraChargeController::rangeTotal');
 
-  // hotel
+  // check in
   $routes->post('check-in', 'GuestController::checkIn');
   $routes->get('guests/checked-in', 'GuestController::checkedInGuests');
   $routes->get('guest/(:num)', 'GuestController::getGuest/$1');
   $routes->post('checkout/(:num)', 'GuestController::checkout/$1');
   $routes->get('dashboard', 'HotelDashboardController::index');
   $routes->get('history', 'HistoryController::index');
+$routes->get('qr-generate', 'QrController::generate');
+// $routes->get('upload-id/(:segment)', 'QrController::uploadPage/$1');
+$routes->post('qr-upload-id/(:segment)', 'QrController::upload/$1');
+$routes->get('qr-status/(:segment)', 'QrController::status/$1');
 
   // extra charges
   $routes->post('extra-charges/bulk', 'ExtraChargeController::addBulk');

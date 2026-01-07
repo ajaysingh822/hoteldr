@@ -1,30 +1,38 @@
 <?php
+
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-use Config\Database;
-
-class AdminController extends Controller
+class AdminController extends BaseController
 {
-    public function totalSale()
+    public function login()
     {
-        $db = Database::connect();
+        $data = $this->request->getJSON(true);
 
-        $from = $this->request->getGet('from');
-        $to   = $this->request->getGet('to');
+        $username = $data['username'] ?? '';
+        $password = $data['password'] ?? '';
 
-        $builder = $db->table('restaurant_payments');
-        $builder->selectSum('amount');
+        $db = \Config\Database::connect();
 
-        if ($from && $to) {
-            $builder->where("DATE(created_at) >=", $from);
-            $builder->where("DATE(created_at) <=", $to);
+        $user = $db->table('users')
+            ->where('username', $username)
+            ->where('role', 'admin')   // 🔥 direct admin
+            ->where('status', 1)
+            ->get()
+            ->getRowArray();
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Invalid admin credentials'
+            ]);
         }
 
-        $result = $builder->get()->getRow();
-
         return $this->response->setJSON([
-            'total' => $result->amount ?? 0
+            'status' => 'success',
+            'admin' => [
+                'id' => $user['id'],
+                'username' => $user['username']
+            ]
         ]);
     }
 }

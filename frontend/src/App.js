@@ -9,9 +9,11 @@ import HotelCheckIn from "./pages/customer/HotelCheckIn";
 import HotelCheckOut from "./pages/customer/HotelCheckOut";
 // Restaurant Imports
 import ResturantDashboard from "./pages/ResturantDashboard";
+import Roomnumber from "./pages/Roomnumber.jsx";
 import TableNumber from "./pages/customer/BillNumber.jsx";
 
 // Admin Imports
+import AdminLogin from "./components/AdminLogin.jsx"
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 
@@ -19,6 +21,8 @@ import HotelAddCharges from "../src/pages/billing/HotelAddcharges.jsx";
 import HotelHistory from "./pages/customer/HotelHistory.jsx";
 import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
 import BillPrint from "./pages/billing/BillPrint.jsx";
+import AdminRestaurant from "./pages/AdminRestaurent.jsx";
+import UploadId from "./pages/customer/UploadId.jsx";
 
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
@@ -39,6 +43,7 @@ export default function App() {
         element={<Navigate to={loggedIn ? "/select-billing" : "/login"} />}
       />
       <Route path="/login" element={<Login />} />
+      <Route path="/admin-login" element={<AdminLogin/>} />
       <Route path="/select-type" element={<SelectType />} />
 
       // hotel routes
@@ -46,12 +51,22 @@ export default function App() {
       <Route path="/hotel/check-in" element={<HotelCheckIn />} />
       <Route path="/hotel/check-out" element={<HotelCheckOut />} />
       <Route path="/hotel-dashboard" element={<HotelDashboard />} />
+      <Route path="/upload-id/:token" element={<UploadId/>} />
+
       // restaurant routes
     <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
     <Route path="/table-number" element={<TableNumber />} />
-    
+    <Route
+  path="/room-number"
+  element= {<Roomnumber/>}
+/>
+
     //admin routes can be added here
     <Route path="/admin-dashboard" element={<AdminDashboard />} />
+<Route
+  path="/admin/restaurant-dashboard"
+  element={<AdminRestaurant/>}
+/>
 
 
       {/* <Route path="/billing/hotel" element={<HotelBilling />} /> */}

@@ -13,62 +13,137 @@ class GuestController extends BaseController
         $db = \Config\Database::connect();
         $guestModel = new GuestModel();
 
-        $name      = $this->request->getPost('name');
-        $mobile    = $this->request->getPost('mobile');
-        $roomNo    = $this->request->getPost('room_no');
-        $rate      = (int)$this->request->getPost('rate');
-        $idType    = $this->request->getPost('id_type');
-        $members   = (int)$this->request->getPost('members');
-        $vehicleNo = $this->request->getPost('vehicle_no');
-        $advance   = (int)($this->request->getPost('advance') ?? 0);
-        $comingfrom = $this->request->getPost('comingfrom');
-        $comingto = $this->request->getPost('comingto');
-        $idNumber = $this->request->getPost('id_number');
-        $reception = $this->request->getPost('reception');
+        // 🔹 BASIC FIELDS
+        $name        = trim($this->request->getPost('name'));
+        $mobile      = trim($this->request->getPost('mobile'));
+        $roomNo      = trim($this->request->getPost('room_no'));
+        $rate        = (int)$this->request->getPost('rate');
+        $idType      = trim($this->request->getPost('id_type'));
+        $memberCount = (int)$this->request->getPost('members');
+
+        // 🔹 OPTIONAL FIELDS
+        $vehicleNo   = trim($this->request->getPost('vehicle_no'));
+        $advance     = (int)($this->request->getPost('advance') ?? 0);
+        $comingfrom  = trim($this->request->getPost('comingfrom'));
+        $comingto    = trim($this->request->getPost('comingto'));
+        $idNumber    = trim($this->request->getPost('id_number'));
+        $reception   = trim($this->request->getPost('reception'));
+
+        // 🔹 VALIDATION
         if (
-            empty($name) ||
-            empty($mobile) ||
-            empty($roomNo) ||
-            empty($idType) ||
+            $name === '' ||
+            $mobile === '' ||
+            $roomNo === '' ||
+            $idType === '' ||
             $rate <= 0 ||
-            $members <= 0
+            $memberCount <= 0
         ) {
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'All fields are required'
+                'message' => 'All required fields are mandatory'
             ]);
         }
 
-        /* 🔥 INSERT GUEST FIRST */
+        // 🔹 ID IMAGE HANDLE
+$idImageName = null;
+
+$file = $this->request->getFile('id_image');
+
+if ($file && $file->isValid() && !$file->hasMoved()) {
+
+    // only allow images
+    $allowed = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
+
+    if (!in_array($file->getMimeType(), $allowed)) {
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Invalid image type'
+        ]);
+    }
+
+    $idImageName = $file->getRandomName();
+    $file->move(FCPATH . 'uploads/ids', $idImageName);
+}
+
+
+        // 🔹 TRANSACTION START
+        $db->transStart();
+
+        /* ================= INSERT GUEST ================= */
         $guestModel->insert([
-            'name'         => $name,
-            'mobile'       => $mobile,
-            'room_no'      => $roomNo,
-            'comingfrom'  =>  $comingfrom,
-            'comingto'     => $comingto,
-            'id_number'    => $idNumber ,
-            'rate'         => $rate,
-            'id_type'      => $idType,
-            'members'      => $members,
-            'vehicle_no'   => $vehicleNo,
-            'advance_paid' => $advance,
-            'reception'    =>  $reception,
-            'status'       => 'checked_in',
-            'check_in_time'=> date('Y-m-d H:i:s'),
-            
+            'name'          => $name,
+            'mobile'        => $mobile,
+            'room_no'       => $roomNo,
+            'comingfrom'    => $comingfrom,
+            'comingto'      => $comingto,
+            'id_number'     => $idNumber,
+            'rate'          => $rate,
+            'id_type'       => $idType,
+            'members'       => $memberCount, // ✅ ONLY NUMBER
+            'vehicle_no'    => $vehicleNo,
+            'id_image'      => $idImageName,
+            'advance_paid'  => $advance,
+            'reception'     => $reception,
+            'status'        => 'checked_in',
+            'check_in_time' => date('Y-m-d H:i:s'),
         ]);
 
-        $guestId = $guestModel->getInsertID(); // ✅ CORRECT PLACE
+        $guestId = $guestModel->getInsertID(); // ✅ NOW SAFE
 
-        /* 🔥 INSERT ADVANCE PAYMENT (OPTIONAL) */
+        /* ================= INSERT ADDITIONAL MEMBERS ================= */
+        $membersJson = $this->request->getPost('member_details');
+
+        if (!empty($membersJson)) {
+            $members = json_decode($membersJson, true);
+
+            if (is_array($members)) {
+                $rows = [];
+
+                foreach ($members as $m) {
+                    // skip fully empty member
+                    if (
+                        empty($m['name']) &&
+                        empty($m['age']) &&
+                        empty($m['sex']) &&
+                        empty($m['id_number'])
+                    ) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'guest_id'  => $guestId,
+                        'name'      => $m['name'] ?? null,
+                        'age'       => $m['age'] ?? null,
+                        'sex'       => $m['sex'] ?? null,
+                        'id_number' => $m['id_number'] ?? null,
+                    ];
+                }
+
+                if (!empty($rows)) {
+                    $db->table('guest_members')->insertBatch($rows);
+                }
+            }
+        }
+
+        /* ================= INSERT ADVANCE PAYMENT ================= */
         if ($advance > 0) {
             $db->table('payments')->insert([
-                'guest_id' => $guestId,
-                'amount' => $advance,
-                'payment_method' => 'cash',
-                'status' => 'paid',
-                'type' => 'advance',
-                'created_at' => date('Y-m-d H:i:s')
+                'guest_id'        => $guestId,
+                'amount'          => $advance,
+                'payment_method'  => 'cash',
+                'status'          => 'paid',
+                'type'            => 'advance',
+                'created_at'      => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        // 🔹 TRANSACTION END
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Check-in failed'
             ]);
         }
 
@@ -84,8 +159,14 @@ class GuestController extends BaseController
         $db = \Config\Database::connect();
 
         $guests = $db->table('guests g')
-            ->select('g.id, g.name, g.room_no, g.rate, g.reception , 
-                IFNULL(SUM(ec.amount),0) as extra_total', )
+            ->select('
+                g.id,
+                g.name,
+                g.room_no,
+                g.rate,
+                g.reception,
+                IFNULL(SUM(ec.amount),0) as extra_total
+            ')
             ->join('extra_charges ec', 'ec.guest_id = g.id', 'left')
             ->where('g.status', 'checked_in')
             ->groupBy('g.id')
@@ -118,7 +199,6 @@ class GuestController extends BaseController
 
         return $this->response->setJSON([
             'status' => 'success',
-            // 'mobile_no'=> $mobile_no,
             'guest' => $guest,
             'charges' => $charges,
             'extra_total' => $extraTotal,
@@ -133,12 +213,14 @@ class GuestController extends BaseController
         $db = \Config\Database::connect();
 
         $payable = (int)$data['total'];
-$checkoutReceptionist = trim($data['checkout_receptionist'] ?? '');
-if ($checkoutReceptionist === '') {
-    return $this->response
-        ->setStatusCode(400)
-        ->setJSON(['message' => 'Checkout receptionist required']);
-}
+        $checkoutReceptionist = trim($data['checkout_receptionist'] ?? '');
+
+        if ($checkoutReceptionist === '') {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON(['message' => 'Checkout receptionist required']);
+        }
+
         // update guest
         $db->table('guests')
             ->where('id', $id)
@@ -147,7 +229,7 @@ if ($checkoutReceptionist === '') {
                 'check_out_time' => date('Y-m-d H:i:s')
             ]);
 
-        // final payment ONLY
+        // final payment
         if ($payable > 0) {
             $db->table('payments')->insert([
                 'guest_id' => $id,
@@ -155,10 +237,9 @@ if ($checkoutReceptionist === '') {
                 'payment_method' => $data['payment_method'],
                 'status' => 'paid',
                 'type' => 'final',
-                'checkout_receptionist'  => $checkoutReceptionist,
+                'checkout_receptionist' => $checkoutReceptionist,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
-            
         }
 
         return $this->response->setJSON([

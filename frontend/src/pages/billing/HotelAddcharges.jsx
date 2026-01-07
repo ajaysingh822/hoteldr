@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Sidebar from "../../components/HotelSidebar";
+import HotelSidebar from "../../components/HotelSidebar";
 
 export default function HotelAddCharges() {
   const { id } = useParams();          // guest id (string)
@@ -84,7 +84,7 @@ export default function HotelAddCharges() {
 
   return (
     <div className="flex">
-      <Sidebar />
+      <HotelSidebar />
 
       <div className="flex-1 ml-64 p-6 bg-amber-50 min-h-screen">
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">

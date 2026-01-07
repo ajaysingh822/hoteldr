@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -10,9 +10,24 @@ import {
   X,
 } from "lucide-react";
 
-export default function AdminSidebar() {
+export default function HotelSidebar() {
+
   const location = useLocation();
   const navigate = useNavigate();
+  const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      fetch("/api/dashboard")   // 👈 SAME API
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            setRooms(data.occupied_rooms || []);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }, []);
   const [open, setOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
@@ -94,7 +109,9 @@ export default function AdminSidebar() {
         </div>
 
         {/* Menu */}
+
         <nav className="flex-1 p-4 space-y-2">
+          
           {navItems.map((item) => (
             <Link
              key={item.path}
@@ -112,15 +129,36 @@ export default function AdminSidebar() {
               <span className="font-medium">{item.name}</span>
             </Link>
           ))}
+          <div><h6 className="text-xl font-bold text-amber-900 mb-2">
+          🔴 Occupied Rooms
+        </h6>
+        {/* rooms.length === 0 ? (
+          <p className="text-gray-500">No occupied rooms</p>
+        ) : ( */}
+          <div className="grid mx-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-1">
+            {rooms.map((r, i) => (
+              <div
+                key={i}
+                className="bg-red-900 text-white rounded-xl shadow
+                           flex items-center justify-center
+                           h-4  font-bold py-3 hover:translate-x-1 " 
+              >
+               {r.room_no}
+              </div>
+            ))}
+          </div>
+        
+        
+        </div>
         </nav>
-
+       
         {/* Logout */}
         <div className="p-5 border-t border-amber-900">
            <nav className="flex-1 p-4 space-y-2">
             <Link
               to={"/restaurant-dashboard"}
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+              className={`flex items-center gap-2  py-2 rounded-lg transition-colors
                 ${
                   isActive()
                     ? "bg-red-700 text-white shadow-md"

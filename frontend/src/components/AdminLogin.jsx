@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function Login() {
+export default function AdminLogin() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -10,26 +10,28 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ✅ VERY IMPORTANT
     setLoading(true);
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
-        credentials: "include", // 🔥 CI session ke liye MUST
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) {
-        throw new Error("Invalid ID or Password");
+      const data = await res.json();
+
+      if (res.ok && data.status === "success") {
+        localStorage.setItem("admin", JSON.stringify(data.admin));
+
+        toast.success("Admin Login Successful");
+        navigate("/admin-dashboard");
+      } else {
+        toast.error(data.message || "Login failed");
       }
-
-      toast.success("Login successful ✅");
-      navigate("/select-type", { replace: true });
-
     } catch (err) {
-      toast.error(err.message);
+      toast.error("Server error");
     } finally {
       setLoading(false);
     }
@@ -38,20 +40,16 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center relative px-4"
-      style={{
-        backgroundImage:
-          "url(bg3.png)",
-      }}
+      style={{ backgroundImage: "url(bg3.png)" }}
     >
-
       <div className="absolute inset-0 bg-black/70"></div>
 
       <div className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-red-700 to-red-600 px-8 py-7 text-center">
+        <div className="bg-gradient-to-r from-blue-700 to-red-600 px-8 py-7 text-center">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
             <span className="text-3xl">🏨</span>
           </div>
-          <h1 className="text-xl font-bold text-white">Counter Login</h1>
+          <h1 className="text-xl font-bold text-white">Admin Login</h1>
           <p className="mt-1 text-sm text-red-100">
             Hotel Dr & Restaurant Billing System
           </p>
@@ -66,7 +64,6 @@ export default function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              placeholder="Enter username"
               className="w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-4 text-sm
                          focus:outline-none focus:ring-2 focus:ring-red-500"
             />
@@ -81,7 +78,6 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
               className="w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-4 text-sm
                          focus:outline-none focus:ring-2 focus:ring-red-500"
             />
@@ -96,14 +92,11 @@ export default function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-     <p className="text-center "> 
-      <button className="bg-slate-400 rounded-xl p-2 text-white hover:bg-slate-600" onClick={()=> navigate("/admin-login")}>CLick Here For Admin</button></p>
+
         <div className="border-t bg-gray-50 py-3 text-center text-xs text-gray-500">
           © {new Date().getFullYear()} Billing Management
         </div>
       </div>
-      <div></div> 
     </div>
-    
   );
 }

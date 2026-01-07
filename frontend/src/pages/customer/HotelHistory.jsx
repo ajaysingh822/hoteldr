@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/HotelSidebar";
+import HotelSidebar from "../../components/HotelSidebar";
 
 export default function HotelHistory() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function HotelHistory() {
 
   return (
     <div className="flex">
-      <Sidebar />
+      <HotelSidebar />
 
       <div className="flex-1 md:ml-64 md:p-6 py-10 bg-amber-50 min-h-screen">
         <div className="max-w-6xl mx-auto bg-white md:p-6 rounded-xl shadow">
@@ -123,6 +123,40 @@ export default function HotelHistory() {
                       >
                         View Details
                       </button>
+                      <button
+  onClick={() => {
+    const bill = {
+      bill_no: r.guest_id,
+      shop_name: "DR HOTEL",
+      address: "Makshi Road Bypass",
+      city: "Dewas (M.P) ",
+      date: new Date(r.check_out_time).toLocaleString(),
+      operator: r.checkout_receptionist,
+      room_no: r.room_no,
+      guest: r.name,
+      mobile_no: r.mobile_no || "",
+      days: r.days || 1,
+      room_charges: Number(r.rate),
+      room_Total: Number(r.rate) * Number(r.days || 1),
+      items: r.charges || [],          // ✅ agar extra hai to
+      sub_total: Number(r.grand_total),
+      cgst: 0,
+      sgst: 0,
+      total: Number(r.grand_total),
+      advance: Number(r.advance_paid || 0),
+      payable: Number(r.grand_total) - Number(r.advance_paid || 0),
+    };
+
+    navigate(`/bill/${r.guest_id}`, {
+      state: { bill },
+    });
+  }}
+  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded ml-2"
+>
+  PRINT
+</button>
+
+                      
                     </td>
                      <td className="border p-2">{r.checkout_receptionist}</td>
                   </tr>
