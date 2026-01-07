@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import "../../Bill.css";
 
 export default function BillPrint() {
-  const { billNo  } = useParams();
-
+  const { billNo } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,18 +27,19 @@ export default function BillPrint() {
 
   if (!bill) return <div>Loading...</div>;
 
-  const hasExtras = bill.items && bill.items.length > 0 ;
+  const extras = bill.items || [];
+  const hasExtras = extras.length > 0;
 
   return (
     <div className="receipt-wrapper">
       <div className="receipt">
 
         {/* ===== HEADER ===== */}
-        <div className="center text-xl bold">{bill.shop_name}</div>
+        <div className="center bold">{bill.shop_name}</div>
         <div className="center">
           {bill.address}<br />
-          {bill.city}<br/>
-          MOB:{bill.tel}
+          {bill.city}<br />
+          MOB: {bill.tel}
         </div>
 
         <div className="line" />
@@ -62,30 +62,28 @@ export default function BillPrint() {
 
         <div className="line" />
 
-        {/* ===== ROOM ONLY ===== */}
-        {!hasExtras && (
-          <>
-            <div className="info">
-              <div>ROOM CHARGE</div>
-              <div>
-                RATE : ₹{Number(bill.room_charges).toFixed(2)} × {bill.days} DAY(S)
-              </div>
-            </div>
+        {/* ===== ROOM CHARGE (ALWAYS SEPARATE) ===== */}
+        <div className="info">
+          <div className="bold">ROOM CHARGE</div>
+          <div>
+            RATE : ₹{Number(bill.room_charges).toFixed(2)} × {bill.days} DAY(S)
+          </div>
+        </div>
 
-            <div className="line" />
+        <div className="line" />
 
-            <div className="totals">
-              <div className="row bold">
-                <span>ROOM TOTAL</span>
-                <span>₹{Number(bill.room_Total).toFixed(2)}</span>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="totals">
+          <div className="row bold">
+            <span>ROOM TOTAL</span>
+            <span>₹{Number(bill.room_Total).toFixed(2)}</span>
+          </div>
+        </div>
 
-        {/* ===== ROOM + EXTRAS ===== */}
+        {/* ===== EXTRAS TABLE (ONLY IF EXISTS) ===== */}
         {hasExtras && (
           <>
+            <div className="line" />
+
             <table>
               <thead>
                 <tr>
@@ -96,19 +94,12 @@ export default function BillPrint() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>ROOM</td>
-                  <td>{bill.days}</td>
-                  <td>{Number(bill.room_charges).toFixed(2)}</td>
-                  <td>{Number(bill.room_Total).toFixed(2)}</td>
-                </tr>
-
-                {bill.items.map((item, i) => (
+                {extras.map((item, i) => (
                   <tr key={i}>
                     <td>{item.title || item.name}</td>
                     <td>{item.qty ?? 1}</td>
-                    <td>{Number(item.rate ?? item.amount).toFixed(2)}</td>
-                    <td>{Number(item.amount ?? item.rate).toFixed(2)}</td>
+                    <td>{Number(item.rate).toFixed(2)}</td>
+                    <td>{Number(item.amount).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -118,7 +109,7 @@ export default function BillPrint() {
 
         <div className="line" />
 
-        {/* ===== TOTALS (RIGHT ALIGNED) ===== */}
+        {/* ===== TOTALS ===== */}
         <div className="totals">
           <div className="row">
             <span>SUB TOTAL</span>
@@ -152,7 +143,7 @@ export default function BillPrint() {
         <div className="line" />
 
         <div className="center">TAX ALREADY INCLUDED</div>
-        <div className="center bold">* THANK YOU  || VISIT AGAIN*</div>
+        <div className="center bold">* THANK YOU || VISIT AGAIN *</div>
 
         {/* ===== BUTTONS ===== */}
         <button className="print-btn" onClick={() => window.print()}>
