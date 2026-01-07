@@ -4,7 +4,7 @@
   justify-content: center;
 }
 
-/* ===== RECEIPT ===== */
+/* ===== RECEIPT (THERMAL) ===== */
 .receipt {
   width: 80mm;
   font-family: monospace;
@@ -13,15 +13,9 @@
   color: #000;
 }
 
-
 /* ===== TEXT ===== */
-.center {
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
-}
+.center { text-align: center; }
+.bold { font-weight: bold; }
 
 .info div {
   margin: 2px 0;
@@ -45,8 +39,8 @@ th, td {
 }
 
 th {
-  text-align: left;
   border-bottom: 1px dashed #000;
+  text-align: left;
 }
 
 td:nth-child(2),
@@ -56,18 +50,10 @@ td:nth-child(4) {
 }
 
 /* ===== TOTALS ===== */
-.totals {
-  margin-top: 4px;
-}
-
-/* ===== TOTALS (FIXED GAP) ===== */
 .totals .row {
-  display: grid;
-  grid-template-columns: 1fr auto; /* 🔥 magic */
-  column-gap: 6px;                 /* control gap here */
-  padding: 2px 0;
+  display: flex;
+  justify-content: space-between;
 }
-
 
 /* ===== BUTTONS ===== */
 .print-btn,
@@ -77,7 +63,7 @@ td:nth-child(4) {
   padding: 6px;
 }
 
-/* ===== PRINT ===== */
+/* ===== PRINT MODE ===== */
 @media print {
   body {
     margin: 0;
@@ -87,127 +73,9 @@ td:nth-child(4) {
   .back-btn {
     display: none !important;
   }
-
-  .receipt,
-  .receipt * {
-    page-break-after: avoid !important;
-    page-break-before: avoid !important;
-    page-break-inside: avoid !important;
-  }
 }
 
 @page {
   size: 80mm auto;
   margin: 0;
-}
-
-.receipt {
-  width: 72mm;
-  display: inline-block;
-}
-/* ===== WRAPPER ===== */
-.receipt-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background: #f2f2f2;
-}
-
-/* ===== RECEIPT ===== */
-.receipt {
-  width: 320px;
-  background: #ffffff;
-  padding: 14px;
-  font-family: monospace;
-  color: #000;
-  font-size: 14px;
-}
-
-/* ===== TEXT ===== */
-.center {
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.text-xl {
-  font-size: 18px;
-}
-
-/* ===== DIVIDERS ===== */
-.line {
-  border-bottom: 1px dashed #000;
-  margin: 8px 0;
-}
-
-/* ===== INFO ===== */
-.info div {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-/* ===== TABLE ===== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-thead th {
-  border-bottom: 1px solid #000;
-  padding-bottom: 4px;
-}
-
-td {
-  padding: 3px 0;
-}
-
-/* ===== TOTALS ===== */
-.totals {
-  font-size: 14px;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 3px 0;
-}
-
-/* ===== BUTTONS (screen only) ===== */
-.print-btn,
-.back-btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.print-btn {
-  background: #000;
-  color: #fff;
-}
-
-.back-btn {
-  background: #777;
-  color: #fff;
-}
-
-/* ===== PRINT MODE ===== */
-@media print {
-  .print-btn,
-  .back-btn {
-    display: none;
-  }
-
-  body {
-    background: #fff;
-  }
-
-  .receipt-wrapper {
-    padding: 0;
-  }
 }
