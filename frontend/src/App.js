@@ -10,7 +10,7 @@ import HotelCheckOut from "./pages/customer/HotelCheckOut";
 
 // Restaurant Imports
 import ResturantDashboard from "./pages/ResturantDashboard";
-import TableNumber from "./pages/customer/BillNumber.jsx";
+// import TableNumber from "./pages/customer/BillNumber.jsx";
 
 // Admin Imports
 import AdminLogin from "./components/AdminLogin.jsx"
@@ -62,7 +62,7 @@ export default function App() {
       <Route path="/hotel-dashboard" element={<HotelDashboard />} />
       // restaurant routes
     <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
-    <Route path="/table-number" element={<TableNumber />} />
+    {/* <Route path="/table-number" element={<TableNumber />} /> */}
     
     //admin routes can be added here
     <Route path="/admin-dashboard" element={<AdminDashboard />} />
