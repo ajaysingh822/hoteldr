@@ -25,9 +25,15 @@ $routes->post('api/login', 'AuthController::login');
 
 // ============ RESTAURANT (NO AUTH) ============
 $routes->post('api/payment/save', 'PaymentController::save');
+$routes->get('api/payment/history', 'PaymentController::history');
+
 
 // RESTAURANT HISTORY (NO AUTH)
 $routes->get('api/restaurant/history', 'RestaurantHistoryController::index');
+// RESTAURANT HISTORY
+$routes->get('api/restaurant/payments', 'PaymentController::all');
+$routes->get('api/restaurant/payments/today', 'PaymentController::today');
+
 
 
 

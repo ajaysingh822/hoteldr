@@ -63,14 +63,18 @@ export default function App() {
 
       {/* Restaurant Routes */}
       <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
-      <Route
-       path="/restaurant/history"
-       element={<RestaurantHistory />}
-      />
+      
       <Route
        path="/restaurant/bill/:billNo"
        element={<RestaurantBillPrint />}
-     />
+       />
+
+
+     <Route
+     path="/restaurant/history"
+     element={<RestaurantHistory />}
+      />
+
 
       <Route path="/billing/restaurant" element={<RestaurantBillPrint />} />
       <Route path="/test-hotel-billing" element={<TestHotelBilling />} />

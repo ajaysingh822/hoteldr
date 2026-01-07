@@ -24,14 +24,14 @@ export default function RestaurantBillPrint() {
       <div className="receipt">
 
         {/* ===== HEADER ===== */}
-        <div className="center text-xl bold">{bill.shop_name}</div>
+        <div className="center text-xl bold">dr restaurant</div>
         <div className="center">RESTAURANT BILL</div>
 
         <div className="line" />
 
         {/* ===== INFO ===== */}
         <div className="info">
-          <div>BILL NO : {bill.bill_no}</div>
+          {/* <div>BILL NO : {bill.bill_no}</div> */}
           <div>DATE : {bill.date}</div>
           <div>TABLE : {bill.table_no}</div>
         </div>
