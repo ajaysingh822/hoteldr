@@ -24,9 +24,9 @@ export default function RestaurantSidebar() {
       icon: LayoutDashboard,
     },
     {
-      name: "new bill",
-      path: "/table-number",
-      icon: PlusCircle,
+      name: "history",
+       path: "/restaurant/history",
+      icon: ClipboardCheck,
     },
    
   ];

@@ -7,15 +7,17 @@ import HotelDashboard from "./pages/HotelDashboard";
 import HotelBilling from "./pages/billing/HotelBilling";
 import HotelCheckIn from "./pages/customer/HotelCheckIn";
 import HotelCheckOut from "./pages/customer/HotelCheckOut";
+
 // Restaurant Imports
 import ResturantDashboard from "./pages/ResturantDashboard";
-import TableNumber from "./pages/customer/BillNumber.jsx";
+import RestaurantHistory from "./pages/customer/RestaurantHistory.jsx";
+import RestaurantBillPrint from "./pages/billing/RestaurantBillPrint.jsx";
+import TestHotelBilling from "./pages/TestHotelBilling";
 
 // Admin Imports
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
-//resrtuarant bill print
-import RestaurantBillPrint from "./pages/billing/RestaurantBillPrint";
+
 
 
 
@@ -61,8 +63,18 @@ export default function App() {
 
       {/* Restaurant Routes */}
       <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
-      <Route path="/table-number" element={<TableNumber />} />
+      <Route
+       path="/restaurant/history"
+       element={<RestaurantHistory />}
+      />
+      <Route
+       path="/restaurant/bill/:billNo"
+       element={<RestaurantBillPrint />}
+     />
+
       <Route path="/billing/restaurant" element={<RestaurantBillPrint />} />
+      <Route path="/test-hotel-billing" element={<TestHotelBilling />} />
+
       
       {/* Admin Routes */}
       <Route path="/admin-dashboard" element={<AdminDashboard />} />

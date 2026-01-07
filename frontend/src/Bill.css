@@ -105,3 +105,109 @@ td:nth-child(4) {
   width: 72mm;
   display: inline-block;
 }
+/* ===== WRAPPER ===== */
+.receipt-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: #f2f2f2;
+}
+
+/* ===== RECEIPT ===== */
+.receipt {
+  width: 320px;
+  background: #ffffff;
+  padding: 14px;
+  font-family: monospace;
+  color: #000;
+  font-size: 14px;
+}
+
+/* ===== TEXT ===== */
+.center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-xl {
+  font-size: 18px;
+}
+
+/* ===== DIVIDERS ===== */
+.line {
+  border-bottom: 1px dashed #000;
+  margin: 8px 0;
+}
+
+/* ===== INFO ===== */
+.info div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  border-bottom: 1px solid #000;
+  padding-bottom: 4px;
+}
+
+td {
+  padding: 3px 0;
+}
+
+/* ===== TOTALS ===== */
+.totals {
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 3px 0;
+}
+
+/* ===== BUTTONS (screen only) ===== */
+.print-btn,
+.back-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.print-btn {
+  background: #000;
+  color: #fff;
+}
+
+.back-btn {
+  background: #777;
+  color: #fff;
+}
+
+/* ===== PRINT MODE ===== */
+@media print {
+  .print-btn,
+  .back-btn {
+    display: none;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .receipt-wrapper {
+    padding: 0;
+  }
+}

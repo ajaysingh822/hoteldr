@@ -2,6 +2,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import "../../Bill.css";
 
+
+
+
 export default function RestaurantBillPrint() {
   const location = useLocation();
   const navigate = useNavigate();

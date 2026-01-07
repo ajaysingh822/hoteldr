@@ -26,6 +26,10 @@ $routes->post('api/login', 'AuthController::login');
 // ============ RESTAURANT (NO AUTH) ============
 $routes->post('api/payment/save', 'PaymentController::save');
 
+// RESTAURANT HISTORY (NO AUTH)
+$routes->get('api/restaurant/history', 'RestaurantHistoryController::index');
+
+
 
 // ============ HOTEL (AUTH REQUIRED) ============
 $routes->group('api', ['filter' => 'auth'], function ($routes) {
