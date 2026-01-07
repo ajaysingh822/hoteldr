@@ -25,7 +25,7 @@ export default function AdminSidebar() {
     },
      {
       name: "Restaurent",
-      path: "/admin/restaurant-dashboard",
+      path: "/admin/restaurant",
       icon: UtensilsCrossed,
     //   center: true, // 👈 mobile center button
     },

@@ -26,6 +26,9 @@ import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
 import BillPrint from "./pages/billing/BillPrint.jsx";
 import AdminRestaurant from "./pages/AdminRestaurent.jsx";
 import UploadId from "./pages/customer/UploadId.jsx";
+import RestaurantSidebar from "./components/ResturantSidebar.jsx";
+import RestaurantHistory from "./pages/customer/RestaurantHistory.jsx";
+import Roomnumber from "./pages/Roomnumber.jsx";
 
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
@@ -62,11 +65,13 @@ export default function App() {
       <Route path="/hotel-dashboard" element={<HotelDashboard />} />
       // restaurant routes
     <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
+     <Route path="/restaurant/history" element={<RestaurantHistory/>} />
     {/* <Route path="/table-number" element={<TableNumber />} /> */}
     
     //admin routes can be added here
     <Route path="/admin-dashboard" element={<AdminDashboard />} />
-
+<Route path="/room-number" element={<Roomnumber/>}/>
+<Route path="/admin/restaurant" element = {<AdminRestaurant/>}/>
 
       {/* <Route path="/billing/hotel" element={<HotelBilling />} /> */}
          <Route path="/hotel/check-in" element={<HotelCheckIn />} />

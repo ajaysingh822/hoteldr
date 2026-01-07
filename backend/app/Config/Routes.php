@@ -23,6 +23,14 @@ $routes->setAutoRoute(false);
 // ================= AUTH =================
 $routes->post('api/login', 'AuthController::login');
 
+
+// ============ HOTEL (AUTH REQUIRED) ============
+$routes->group('api', ['filter' => 'auth'], function ($routes) {
+
+    $routes->get('/', 'Home::index');
+
+  $routes->get('admin/total-sale', 'AdminController::totalSale');
+
     $routes->post('api/admin/login', 'AdminController::login');
     $routes->post('api/admin/logout', 'AdminController::logout');
     $routes->get('me', 'AdminController::me');
@@ -40,14 +48,6 @@ $routes->get('api/restaurant/payments', 'PaymentController::all');
 $routes->get('api/restaurant/payments/today', 'PaymentController::today');
 
 
-
-
-// ============ HOTEL (AUTH REQUIRED) ============
-$routes->group('api', ['filter' => 'auth'], function ($routes) {
-
-    $routes->get('/', 'Home::index');
-
-  $routes->get('admin/total-sale', 'AdminController::totalSale');
 
   // hotel
   $routes->post('check-in', 'GuestController::checkIn');

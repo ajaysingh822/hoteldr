@@ -178,7 +178,7 @@ class HistoryController extends BaseController
                 'check_out_time' => $guest['check_out_time'],
             ],
             'charges' => [],
-            'members_list' => $members
+               'members_list' => $members
         ]);
     }
 }
