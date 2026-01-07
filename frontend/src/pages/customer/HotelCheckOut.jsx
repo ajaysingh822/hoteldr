@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/HotelSidebar";
+import HotelSidebar from "../../components/HotelSidebar";
 import { useNavigate ,useLocation } from "react-router-dom";
 import {toast} from "react-hot-toast";
 export default function HotelCheckOut() {
@@ -24,7 +24,7 @@ export default function HotelCheckOut() {
   return ( 
     <div className="flex  bg-cover bg-center" 
     >
-      <Sidebar />
+      <HotelSidebar />
 
       <div className="flex-1 bg-amber-50 min-h-screen md:ml-64  md:p-6 bg-cover bg-center"  
         style={{

@@ -23,6 +23,11 @@ $routes->setAutoRoute(false);
 // ================= AUTH =================
 $routes->post('api/login', 'AuthController::login');
 
+    $routes->post('api/admin/login', 'AdminController::login');
+    $routes->post('api/admin/logout', 'AdminController::logout');
+    $routes->get('me', 'AdminController::me');
+
+
 // ============ RESTAURANT (NO AUTH) ============
 $routes->post('api/payment/save', 'PaymentController::save');
 $routes->get('api/payment/history', 'PaymentController::history');
@@ -42,15 +47,15 @@ $routes->group('api', ['filter' => 'auth'], function ($routes) {
 
     $routes->get('/', 'Home::index');
 
-    $routes->get('admin/total-sale', 'AdminController::totalSale');
+  $routes->get('admin/total-sale', 'AdminController::totalSale');
 
-    // HOTEL
-    $routes->post('check-in', 'GuestController::checkIn');
-    $routes->get('guests/checked-in', 'GuestController::checkedInGuests');
-    $routes->get('guest/(:num)', 'GuestController::getGuest/$1');
-    $routes->post('checkout/(:num)', 'GuestController::checkout/$1');
-    $routes->get('dashboard', 'HotelDashboardController::index');
-    $routes->get('history', 'HistoryController::index');
+  // hotel
+  $routes->post('check-in', 'GuestController::checkIn');
+  $routes->get('guests/checked-in', 'GuestController::checkedInGuests');
+  $routes->get('guest/(:num)', 'GuestController::getGuest/$1');
+  $routes->post('checkout/(:num)', 'GuestController::checkout/$1');
+  $routes->get('dashboard', 'HotelDashboardController::index');
+  $routes->get('history', 'HistoryController::index');
 
     // EXTRA CHARGES
     $routes->post('extra-charges/bulk', 'ExtraChargeController::addBulk');

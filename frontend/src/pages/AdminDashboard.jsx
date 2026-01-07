@@ -55,67 +55,115 @@ export default function AdminDashboard() {
 
   const fetchTotal = async () => {
     const res = await fetch(
-      `/api/admin/total-sale?from=${from}&to=${to}`
+      `http://localhost:8080/api/admin/total-sale?from=${from}&to=${to}`
     );
     const data = await res.json();
     setTotal(data.total);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center p-6">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden">
-        
-        {/* HEADER IMAGE */}
-        <div className="h-48 w-full">
-          <img
-            src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5"
-            alt="DR Hotel"
-            className="h-full w-full object-cover"
-          />
+    <div  className="flex  min-h-screen bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: "url('/bg3.png')",
+  }} >
+      <AdminSidebar/>
+   
+
+      {/* Main Content (SAME AS AddCharges) */}
+      <div className="md:ml-64 flex-1  p-5 md:p-6">
+        <h1 className="text-2xl font-bold text-amber-900 mb-6">
+          🏨 Admin Hotel Dashboard
+        </h1>
+
+        {/* Top Stats */}
+        <div className="grid grid-cols-2  md:grid-cols-4 gap-2 mb-8">
+          <Card title="Rooms Occupied" value={stats.occupied} color="red" />
+          <Card title="Rooms Available" value={stats.available} color="green" />
+          <Card title="Check-ins Today" value={stats.todayCheckins} color="red" />
+          <Card title="Check-outs Today" value={stats.todayCheckouts} color="red" />
         </div>
 
-        {/* CONTENT */}
-        <div className="p-8 text-center">
-          <h1 className="text-3xl font-extrabold text-amber-900">
-            DR Hotel & Restaurant
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Admin Sales Dashboard
-          </p>
+        {/* Revenue */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+          <Revenue title="Today Revenue" value={stats.todayRevenue} />
+          <Revenue title="Monthly Revenue" value={stats.monthlyRevenue} />
+          {/* <Revenue title="Pending Payments" value={stats.pending} danger /> */}
+        </div>
 
-          {/* FILTER */}
-          <div className="flex flex-col md:flex-row gap-3 justify-center mt-6">
-            <input
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <input
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <button
-              onClick={fetchTotal}
-              className="bg-amber-700 hover:bg-amber-800 text-white px-6 py-2 rounded-lg font-semibold"
-            >
-              View Report
-            </button>
-          </div>
+        {/* Recent Bills */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">🧾 Recent Hotel Bills</h2>
 
-          {/* TOTAL SALE */}
-          <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
-            <p className="text-gray-600 text-lg">
-              Total Restaurant Sale
-            </p>
-            <p className="text-4xl font-bold text-amber-900 mt-2">
-              ₹ {total}
-            </p>
-          </div>
+          {bills.length === 0 ? (
+            <p className="text-sm text-gray-500">No recent bills</p>
+          ) : (
+            <table className=" w-full text-sm border">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border px-3 py-2 text-left">Bill No</th>
+                  <th className="border hidden md:block px-3 py-2 text-left">Guest</th>
+                  <th className="border px-3 py-2 text-left">Room</th>
+                  <th className="border px-3 py-2 text-left">Amount</th>
+                  <th className="border hidden md:block px-3 py-2 text-left">Status</th>
+                  <th className="border px-3 py-2 text-left">Check Out By</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.map(b => (
+                  <tr key={b.id}>
+                    <td className="border px-3 py-2">H-{b.id}</td>
+                    <td className="border hidden md:block px-3 py-2">{b.name}</td>
+                    <td className="border px-3 py-2">{b.room_no}</td>
+                    <td className="border px-3 py-2">
+                      ₹ {Number(b.amount).toLocaleString()}
+                    </td>
+                    <td
+                      className={`border hidden md:block px-3 py-2 font-bold ${
+                        b.status === "paid" ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {b.status}
+                    </td>
+                     <td
+  className={`border px-3 py-2 font-medium ${
+    b.checkout_receptionist?.trim() ? "text-gray-800" : "text-red-600"
+  }`}
+>
+  {b.checkout_receptionist?.trim() ? b.checkout_receptionist : "Advance"}
+</td>
+
+                  </tr>
+
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------- Reusable ---------- */
+
+function Card({ title, value, color }) {
+  return (
+    <div className="bg-white w-40 rounded-xl shadow p-5">
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className={`text-2xl font-bold text-${color}-700`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Revenue({ title, value, danger }) {
+  return (
+    <div className="bg-white rounded-xl md:w-full w-[150px] shadow p-5">
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className={`text-2xl font-bold ${danger ? "text-red-700" : "text-green-700"}`}>
+        ₹ {Number(value).toLocaleString()}
+      </p>
     </div>
   );
 }

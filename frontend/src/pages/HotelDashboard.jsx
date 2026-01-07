@@ -1,5 +1,5 @@
 
-import Sidebar from "../components/HotelSidebar";
+import HotelSidebar from "../components/HotelSidebar";
 
 
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ export default function HotelDashboard() {
   if (!stats) {
     return (
       <div className="flex min-h-screen bg-amber-50">
-        <Sidebar />
+        <HotelSidebar />
         <div className="flex-1 p-6">
           <p>Loading dashboard...</p>
         </div>
@@ -38,7 +38,7 @@ export default function HotelDashboard() {
   style={{
     backgroundImage: "url('/bg3.png')",
   }} >
-      <Sidebar/>
+      <HotelSidebar/>
    
 
       {/* Main Content (SAME AS AddCharges) */}

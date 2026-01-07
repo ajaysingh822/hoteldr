@@ -13,6 +13,7 @@ class HotelDashboardController extends BaseController
     $occupied = $db->table('guests')
         ->where('status', 'checked_in')
         ->countAllResults();
+    
 
 $today = date('Y-m-d');
 
@@ -53,6 +54,12 @@ $todayCheckouts = $db->table('guests')
         ->getRow()
         ->amount ?? 0;
 
+$occupiedRooms = $db->table('guests')
+        ->select('room_no')
+        ->where('status', 'checked_in')
+        ->orderBy('room_no', 'ASC')
+        ->get()
+        ->getResultArray();
 
     $recentBills = $db->table('payments p')
         ->select('p.id, g.name, g.room_no, p.amount, p.status , p.checkout_receptionist')
@@ -67,6 +74,8 @@ $todayCheckouts = $db->table('guests')
         'stats' => [
             'occupied' => $occupied,
             'available' => $available,
+            // 'room' => $room_no ,
+             'occupied' => $occupied,
              'todayCheckins' => $todayCheckins,     // ✅ FIX
         'todayCheckouts' => $todayCheckouts, 
             'todayRevenue' => $todayRevenue,
@@ -74,7 +83,8 @@ $todayCheckouts = $db->table('guests')
           
             // 'checkout_receptionist' => $checkout_receptionist,
         ],
-        'recentBills' => $recentBills
+        'recentBills' => $recentBills,
+        'occupied_rooms' => $occupiedRooms
     ]);
 }
 

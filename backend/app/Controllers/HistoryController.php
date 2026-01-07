@@ -5,7 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 
 class HistoryController extends BaseController
-{public function index()
+{
+    public function index()
 {
     $db = \Config\Database::connect();
 
@@ -20,9 +21,9 @@ class HistoryController extends BaseController
         ->select('
             g.id as guest_id,
             g.name,
+            g.members,
             g.mobile,
             g.room_no,
-            g.members,
             g.vehicle_no,
             g.rate,
             g.check_in_time,
@@ -81,10 +82,34 @@ public function view($guestId)
 {
     $db = \Config\Database::connect();
 
+    // guest (agar mila to)
     $guest = $db->table('guests')
         ->where('id', $guestId)
         ->get()
         ->getRowArray();
+
+    // 🔥 DIRECT MEMBERS (NO DEPENDENCY)
+    $members = $db->table('guest_members')
+        ->where('guest_id', $guestId)
+        ->get()
+        ->getResultArray();
+  $imageUrl = !empty($guest['id_image'])
+        ? base_url('uploads/ids/' . $guest['id_image'])
+        : null;
+    // agar guest nahi mila but members hain → fake guest bna do
+    if (!$guest && !empty($members)) {
+        $guest = [
+            'id' => $guestId,
+            'name' => '—',
+            'mobile' => '—',
+            'room_no' => '—',
+            'members' => count($members) + 1,
+            'vehicle_no' => null,
+            'rate' => 0,
+            'check_in_time' => null,
+            'check_out_time' => null
+        ];
+    }
 
     if (!$guest) {
         return $this->response->setJSON([
@@ -92,46 +117,6 @@ public function view($guestId)
             'message' => 'Guest not found'
         ]);
     }
-
-    $payments = $db->table('payments')
-        ->where('guest_id', $guestId)
-        ->get()
-        ->getResultArray();
-    $advancePaid = 0;
-    $finalPaid = 0;
-    
-    foreach ($payments as $p) {
-      
-        if ($p['type'] === 'advance') {
-            $advancePaid += $p['amount'];
-            //   $checkout_receptionist = 'checkout_receptionist';
-        } 
-        else {
-            $finalPaid += $p['amount'];
-             $checkout_receptionist = $p['checkout_receptionist'];
-        }
-    }
-
-    $totalPaid = $advancePaid + $finalPaid;
-
-    $charges = $db->table('extra_charges')
-        ->where('guest_id', $guestId)
-        ->get()
-        ->getResultArray();
-
-    $extraTotal = array_sum(array_column($charges, 'amount'));
-
-    // 🕒 Days calculation
-    $days = 1;
-    if ($guest['check_in_time'] && $guest['check_out_time']) {
-        $in  = new \DateTime($guest['check_in_time']);
-        $out = new \DateTime($guest['check_out_time']);
-        $days = max(1, $in->diff($out)->days);
-    }
-
-    $roomTotal  = $guest['rate'] * $days;
-    $grandTotal = $roomTotal + $extraTotal;
-    $balance    = $grandTotal - $totalPaid;
 
     return $this->response->setJSON([
         'status' => 'success',
@@ -143,19 +128,21 @@ public function view($guestId)
             'members' => $guest['members'],
             'vehicle_no' => $guest['vehicle_no'],
             'rate' => $guest['rate'],
-            'days' => $days,
-            'room_total' => $roomTotal,
-            'extra_total' => $extraTotal,
-            'grand_total' => $grandTotal,
-            'advance_paid' => $advancePaid,
-            'final_paid' => $finalPaid,
-            'total_paid' => $totalPaid,
-            'checkout_receptionist' => $checkout_receptionist,
+            // 'image' =>$guest['id_image'],
+            'days' => 1,
+            'id_image_url'   => $imageUrl,
+            'room_total' => 0,
+            'extra_total' => 0,
+            'grand_total' => 0,
+            'advance_paid' => 0,
+            'total_paid' => 0,
             'check_in_time' => $guest['check_in_time'],
             'check_out_time' => $guest['check_out_time'],
         ],
-        'charges' => $charges
+        'charges' => [],
+        'members_list' => $members   // 🔥 BAS YE CHAHIYE THA
     ]);
 }
+
 
 }

@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import "../../Bill.css";
 
 export default function BillPrint() {
-  const { billNo } = useParams();
+  const { billNo  } = useParams();
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ export default function BillPrint() {
 
   if (!bill) return <div>Loading...</div>;
 
-  const hasExtras = bill.items && bill.items.length > 0;
+  const hasExtras = bill.items && bill.items.length > 0 ;
 
   return (
     <div className="receipt-wrapper">
