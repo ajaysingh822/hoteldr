@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   PlusCircle,
-  LogOut, Bed ,UtensilsCrossed
+  LogOut, Bed ,UtensilsCrossed , Key
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -27,6 +27,12 @@ export default function AdminSidebar() {
       name: "Restaurent",
       path: "/admin/restaurant",
       icon: UtensilsCrossed,
+    //   center: true, // 👈 mobile center button
+    },
+     {
+      name: "Change Password",
+      path: "/admin/change-password",
+      icon: Key,
     //   center: true, // 👈 mobile center button
     },
   ];

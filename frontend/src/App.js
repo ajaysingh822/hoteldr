@@ -29,6 +29,8 @@ import UploadId from "./pages/customer/UploadId.jsx";
 import RestaurantSidebar from "./components/ResturantSidebar.jsx";
 import RestaurantHistory from "./pages/customer/RestaurantHistory.jsx";
 import Roomnumber from "./pages/Roomnumber.jsx";
+import RestaurantBillPrint from "./pages/billing/RestaurantBillPrint.jsx";
+import AdminChangePassword from "./components/AdminChangePassword.jsx";
 
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
@@ -66,12 +68,28 @@ export default function App() {
       // restaurant routes
     <Route path="/restaurant-dashboard" element={<ResturantDashboard />} />
      <Route path="/restaurant/history" element={<RestaurantHistory/>} />
+      <Route path="/restaurant/bill" element={<RestaurantHistory/>} />
     {/* <Route path="/table-number" element={<TableNumber />} /> */}
     
     //admin routes can be added here
     <Route path="/admin-dashboard" element={<AdminDashboard />} />
 <Route path="/room-number" element={<Roomnumber/>}/>
-<Route path="/admin/restaurant" element = {<AdminRestaurant/>}/>
+<Route path="/admin/restaurant" element={<AdminRestaurant/>}/>
+<Route
+  path="/admin/change-password"
+  element={<AdminChangePassword/>}
+/>
+
+
+
+{/* <Route path="/restaurant/:id" element = {<RestaurantBillPrint/>}/> */}
+
+
+<Route
+  path="/restaurant/bill/:billNo"
+  element={<RestaurantBillPrint />}
+/>
+
 
       {/* <Route path="/billing/hotel" element={<HotelBilling />} /> */}
          <Route path="/hotel/check-in" element={<HotelCheckIn />} />

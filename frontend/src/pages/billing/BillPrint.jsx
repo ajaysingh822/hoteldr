@@ -2,30 +2,40 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../../Bill.css";
 
-export default function BillPrint() {
+export default function HotelBillPrint() {
   const { billNo } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
+  // 🔹 bill source: state → API (refresh safe)
   const [bill, setBill] = useState(location.state?.bill || null);
+  const [loading, setLoading] = useState(false);
 
-  /* ===== Fetch on refresh ===== */
+  /* ===== FETCH BILL ON REFRESH ===== */
   useEffect(() => {
     if (!bill && billNo) {
+      setLoading(true);
       fetch(`/api/bill/${billNo}`)
         .then(res => res.json())
-        .then(data => setBill(data));
+        .then(data => {
+          setBill(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
     }
   }, [bill, billNo]);
 
-  /* ===== Auto print ===== */
+  /* ===== AUTO PRINT ===== */
   useEffect(() => {
     if (bill) {
-      setTimeout(() => window.print(), 500);
+      setTimeout(() => {
+        window.print();
+      }, 500);
     }
   }, [bill]);
 
-  if (!bill) return <div>Loading...</div>;
+  if (loading) return <div style={{ padding: 20 }}>Loading bill...</div>;
+  if (!bill) return <div style={{ padding: 20 }}>Bill not found</div>;
 
   const extras = bill.items || [];
   const hasExtras = extras.length > 0;
@@ -35,7 +45,7 @@ export default function BillPrint() {
       <div className="receipt">
 
         {/* ===== HEADER ===== */}
-        <div className="center bold">{bill.shop_name}</div>
+        <div className="center bold text-lg">{bill.shop_name}</div>
         <div className="center">
           {bill.address}<br />
           {bill.city}<br />
@@ -46,23 +56,23 @@ export default function BillPrint() {
 
         {/* ===== BASIC INFO ===== */}
         <div className="info">
-          <div>BILL NO : {bill.bill_no}</div>
-          <div>OPERATOR : {bill.operator}</div>
-          <div>ROOM : {bill.room_no}</div>
-          <div>DATE : {bill.date}</div>
+          <div><span>BILL NO :</span><span>{bill.bill_no}</span></div>
+          <div><span>OPERATOR :</span><span>{bill.operator}</span></div>
+          <div><span>ROOM :</span><span>{bill.room_no}</span></div>
+          <div><span>DATE :</span><span>{bill.date}</span></div>
         </div>
 
         <div className="line" />
 
-        {/* ===== GUEST ===== */}
+        {/* ===== GUEST INFO ===== */}
         <div className="info">
-          <div>GUEST : {bill.guest}</div>
-          <div>MOBILE : {bill.mobile_no || "-"}</div>
+          <div><span>GUEST :</span><span>{bill.guest}</span></div>
+          {/* <div><span>MOBILE</span><span>{bill.mobile_no || "-"}</span></div> */}
         </div>
 
         <div className="line" />
 
-        {/* ===== ROOM CHARGE (ALWAYS SEPARATE) ===== */}
+        {/* ===== ROOM CHARGES ===== */}
         <div className="info">
           <div className="bold">ROOM CHARGE</div>
           <div>
@@ -75,16 +85,16 @@ export default function BillPrint() {
         <div className="totals">
           <div className="row bold">
             <span>ROOM TOTAL</span>
-            <span>₹{Number(bill.room_Total).toFixed(2)}</span>
+            <span>₹{Number(bill.room_charges).toFixed(2)}</span>
           </div>
         </div>
 
-        {/* ===== EXTRAS TABLE (ONLY IF EXISTS) ===== */}
+        {/* ===== EXTRA CHARGES ===== */}
         {hasExtras && (
           <>
             <div className="line" />
 
-            <table>
+            <table className="items-table">
               <thead>
                 <tr>
                   <th>ITEM</th>
@@ -98,8 +108,8 @@ export default function BillPrint() {
                   <tr key={i}>
                     <td>{item.title || item.name}</td>
                     <td>{item.qty ?? 1}</td>
-                    <td>{Number(item.rate).toFixed(2)}</td>
-                    <td>{Number(item.amount).toFixed(2)}</td>
+                    <td>₹{Number(item.rate).toFixed(2)}</td>
+                    <td>₹{Number(item.amount).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -109,7 +119,7 @@ export default function BillPrint() {
 
         <div className="line" />
 
-        {/* ===== TOTALS ===== */}
+        {/* ===== GRAND TOTAL ===== */}
         <div className="totals">
           <div className="row">
             <span>SUB TOTAL</span>
@@ -132,7 +142,7 @@ export default function BillPrint() {
           </div>
           <div className="row">
             <span>ADVANCE</span>
-            <span>₹{Number(bill.advance).toFixed(2)}</span>
+            <span>₹{Number(bill.advance || 0).toFixed(2)}</span>
           </div>
           <div className="row bold">
             <span>PAYABLE</span>
@@ -145,12 +155,15 @@ export default function BillPrint() {
         <div className="center">TAX ALREADY INCLUDED</div>
         <div className="center bold">* THANK YOU || VISIT AGAIN *</div>
 
-        {/* ===== BUTTONS ===== */}
+        {/* ===== ACTION BUTTONS ===== */}
         <button className="print-btn" onClick={() => window.print()}>
           PRINT
         </button>
 
-        <button className="back-btn" onClick={() => navigate("/hotel/check-out")}>
+        <button
+          className="back-btn"
+          onClick={() => navigate("/hotel/check-out")}
+        >
           BACK
         </button>
 

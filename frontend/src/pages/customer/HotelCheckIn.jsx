@@ -20,6 +20,7 @@ export default function HotelCheckIn() {
 const [showQR, setShowQR] = useState(false);
 const [qrUrl, setQrUrl] = useState("");
 const [qrToken, setQrToken] = useState("");
+const [idImage2, setIdImage2] = useState(null); // 🔥 ADD (ID BACK)
 
   // 🔹 OPTIONAL MEMBERS
   const [memberDetails, setMemberDetails] = useState([]);
@@ -59,16 +60,20 @@ const [qrToken, setQrToken] = useState("");
       formData.append("comingto", comingto.trim());
       formData.append("id_number", IdNumber.trim());
       formData.append("reception", reception.trim());
+
+      if (idImage) formData.append("id_image2", idImage2); // 🔥 ADD (BACK)
+
       if (idImage) formData.append("id_image", idImage);
 
       if (memberDetails.length > 0) {
         formData.append("member_details", JSON.stringify(memberDetails));
-      }
+      } 
+         const res = await fetch("/api/check-in", {
+      method: "POST",
+      credentials: "include",
+      body: formData, // ✅ FormData direct
+    });
 
-      const res = await fetch("/api/check-in", {
-        method: "POST",
-        body: formData,
-      });
 
       const data = await res.json();
 
@@ -344,10 +349,24 @@ useEffect(() => {
                 hidden
                 onChange={(e) => {
                   setIdImage(e.target.files[0]);
-                  setShowUploadChoice(false);
+                  
                 }}
-              />
-            </label>
+              /></label>
+              {/* 🔥 ADD – ID BACK */}
+<label className="block w-full mb-3 bg-gray-200 text-center py-2 rounded-lg cursor-pointer">
+  📁 Upload ID Back
+  <input
+    type="file"
+    accept="image/*"
+    hidden
+    onChange={(e) => {
+      setIdImage2(e.target.files[0]);
+      
+    }}
+  />
+</label>
+
+            
 
             {/* QR OPTION */}
             <button
@@ -376,7 +395,7 @@ onClick={async () => {
               onClick={() => setShowUploadChoice(false)}
               className="mt-4 text-sm text-red-600 w-full"
             >
-              Cancel
+              submit
             </button>
           </div>
         </div>

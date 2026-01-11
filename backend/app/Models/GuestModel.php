@@ -16,6 +16,7 @@ class GuestModel extends Model
   'comingfrom',
   'id_number',
   'id_image',
+  'id_image2',
   'room_no',
   'id_type',
   'rate',

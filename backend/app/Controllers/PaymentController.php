@@ -7,16 +7,23 @@ use CodeIgniter\RESTful\ResourceController;
 
 class PaymentController extends ResourceController
 {
-    // already existing
+    protected $format = 'json';
+
+    // 🔹 SAVE PAYMENT
     public function save()
     {
         $data = $this->request->getJSON(true);
 
+        if (!$data) {
+            return $this->failValidationErrors('No JSON data received');
+        }
+
         if (!isset($data['amount']) || !isset($data['payment_mode'])) {
-            return $this->fail('Amount or payment mode missing');
+            return $this->failValidationErrors('Amount or payment mode missing');
         }
 
         $model = new PaymentModel();
+
         $model->insert([
             'amount'        => $data['amount'],
             'payment_mode'  => $data['payment_mode'],
@@ -24,10 +31,13 @@ class PaymentController extends ResourceController
             'status'        => 'PAID'
         ]);
 
-        return $this->respond(['status' => 'success']);
+        return $this->respond([
+            'status'  => 'success',
+            'message' => 'Payment saved successfully'
+        ], 200);
     }
 
-    // 🔹 TODAY BILLS
+    // 🔹 TODAY PAYMENTS
     public function today()
     {
         $model = new PaymentModel();
@@ -43,13 +53,13 @@ class PaymentController extends ResourceController
         );
     }
 
-    // 🔹 ALL HISTORY
+    // 🔹 ALL PAYMENTS
     public function all()
     {
         $model = new PaymentModel();
+
         return $this->respond(
             $model->orderBy('payment_time', 'DESC')->findAll()
         );
     }
 }
-

@@ -81,13 +81,12 @@ export default function HotelHistoryDetail() {
 
             <p><b>Advance Paid:</b> ₹{bill.advance_paid}</p>
             <p><b>Total Paid:</b> ₹{bill.total_paid}</p>
-              {bill.id_image_url && (
-        <img
-          src={bill.id_image_url}
-          width="200"
-          alt="ID"
-        />
-      )}
+
+          <div style={{ display: "flex", gap: "16px" }}>
+  <img src={bill.id_image_url} width="200" />
+  <img src={bill.id_image_url2} width="200" />
+</div>
+
           </div>
 
           {/* ================= MEMBERS DETAILS ================= */}

@@ -10,21 +10,21 @@ export default function AdminRestaurant() {
   const [to, setTo] = useState("");
 
   useEffect(() => {
-    fetch("/api/extra-charges/today")
+    fetch("/api/extra-charges/today-grand")
       .then(r => r.json())
-      .then(d => d.status === "success" && setToday(d.total));
+      .then(d => d.status === "success" && setToday(d.grand_total || 0));
 
-    fetch("/api/extra-charges/month")
+    fetch("/api/extra-charges/month-grand")
       .then(r => r.json())
-      .then(d => d.status === "success" && setMonth(d.total));
+      .then(d => d.status === "success" && setMonth(d.grand_total || 0));
   }, []);
 
   const fetchRange = () => {
     if (!from || !to) return;
 
-    fetch(`/api/extra-charges/range?from=${from}&to=${to}`)
+    fetch(`/api/extra-charges/range-grand?from=${from}&to=${to}`)
       .then(r => r.json())
-      .then(d => d.status === "success" && setRangeTotal(d.total));
+      .then(d => d.status === "success" && setRangeTotal(d.grand_total || 0));
   };
 
   return (

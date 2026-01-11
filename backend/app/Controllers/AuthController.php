@@ -56,6 +56,66 @@ class AuthController extends BaseController
 
     return $this->response->setJSON(['status' => 'success']);
 }
+        public function changePassword()
+{
+    $data = $this->request->getJSON(true);
+
+    if (
+        empty($data['role']) ||
+        empty($data['old_password']) ||
+        empty($data['new_password'])
+    ) {
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Invalid payload'
+        ], 400);
+    }
+
+    $db = \Config\Database::connect();
+
+    if ($data['role'] === 'admin') {
+        // 🔹 ADMIN USER
+        $user = $db->table('users')
+            ->where('role', 'admin')
+            ->where('status', 1)
+            ->get()
+            ->getRowArray();
+    } else {
+        // 🔹 SINGLE COUNTER USER
+        $user = $db->table('users')
+            ->where('role', 'counter')
+            ->where('status', 1)
+            ->get()
+            ->getRowArray();
+    }
+
+    if (!$user) {
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => ucfirst($data['role']) . ' not found'
+        ], 404);
+    }
+
+    // 🔐 verify old password
+    if (!password_verify($data['old_password'], $user['password'])) {
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Old password incorrect'
+        ], 401);
+    }
+
+    // 🔐 hash new password
+    $newHash = password_hash($data['new_password'], PASSWORD_DEFAULT);
+
+    $db->table('users')
+        ->where('id', $user['id'])
+        ->update(['password' => $newHash]);
+
+    return $this->response->setJSON([
+        'status' => 'success',
+        'message' => ucfirst($data['role']) . ' password changed successfully'
+    ]);
+}
 
 
 }

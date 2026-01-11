@@ -14,7 +14,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("https://api.drhotel.site/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -92,9 +92,11 @@ export default function AdminLogin() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+        <p>
+      <button className="bg-slate-400 w-full rounded-xl p-2 text-white hover:bg-slate-600" onClick={()=> navigate("/login")}>CLick Here For COunter</button></p>
 
         <div className="border-t bg-gray-50 py-3 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} Billing Management
+          © {new Date().getFullYear()} DR Billing Management Support : 9343185294 , 8224950286 
         </div>
       </div>
     </div>

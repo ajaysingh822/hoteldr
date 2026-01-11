@@ -46,8 +46,9 @@ class GuestController extends BaseController
 
         // 🔹 ID IMAGE HANDLE
 $idImageName = null;
-
+$idImageName2 = null;
 $file = $this->request->getFile('id_image');
+$file2 = $this->request->getFile('id_image2');
 
 if ($file && $file->isValid() && !$file->hasMoved()) {
 
@@ -62,8 +63,32 @@ if ($file && $file->isValid() && !$file->hasMoved()) {
     }
 
     $idImageName = $file->getRandomName();
-    $file->move(FCPATH . 'uploads/ids', $idImageName);
+$tempPath = $file->getTempName();
+$finalPath = FCPATH . 'uploads/ids/' . $idImageName;
+
+$this->compressImage($tempPath, $finalPath, 60);
 }
+
+if ($file2 && $file2->isValid() && !$file2->hasMoved()) {
+
+    // only allow images
+    $allowed = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
+
+    if (!in_array($file2->getMimeType(), $allowed)) {
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Invalid image type'
+        ]);
+    }
+
+    $idImageName2 = $file2->getRandomName();
+  $tempPath = $file2->getTempName();
+$finalPath = FCPATH . 'uploads/ids2/' . $idImageName2;
+
+$this->compressImage($tempPath, $finalPath, 60);
+
+}
+
 
 
         // 🔹 TRANSACTION START
@@ -82,6 +107,7 @@ if ($file && $file->isValid() && !$file->hasMoved()) {
             'members'       => $memberCount, // ✅ ONLY NUMBER
             'vehicle_no'    => $vehicleNo,
             'id_image'      => $idImageName,
+            'id_image2'      => $idImageName2,
             'advance_paid'  => $advance,
             'reception'     => $reception,
             'status'        => 'checked_in',
@@ -240,4 +266,26 @@ if ($file && $file->isValid() && !$file->hasMoved()) {
             'status' => 'success'
         ]);
     }
+    private function compressImage($sourcePath, $destinationPath, $quality = 60)
+{
+    $info = getimagesize($sourcePath);
+    $mime = $info['mime'];
+
+    if ($mime === 'image/jpeg') {
+        $image = imagecreatefromjpeg($sourcePath);
+        imagejpeg($image, $destinationPath, $quality);
+    } elseif ($mime === 'image/png') {
+        $image = imagecreatefrompng($sourcePath);
+        imagepng($image, $destinationPath, 8); // 0(best) - 9(max)
+    } elseif ($mime === 'image/webp') {
+        $image = imagecreatefromwebp($sourcePath);
+        imagewebp($image, $destinationPath, $quality);
+    } else {
+        return false;
+    }
+
+    imagedestroy($image);
+    return true;
+}
+
 }

@@ -14,7 +14,6 @@ class HotelDashboardController extends BaseController
         ->where('status', 'checked_in')
         ->countAllResults();
     
-
 $today = date('Y-m-d');
 
 // ✅ Check-ins Today
@@ -60,6 +59,26 @@ $occupiedRooms = $db->table('guests')
         ->orderBy('room_no', 'ASC')
         ->get()
         ->getResultArray();
+$db = \Config\Database::connect();
+
+// 🔥 TODAY ROOMS CHARGE
+$todayRoomsCharge = $db->table('guests')
+    ->selectSum('rate')
+    ->where('status', 'checked_out')
+    ->where('DATE(check_out_time)', date('Y-m-d'))
+    ->get()
+    ->getRow()
+    ->rate ?? 0;
+
+// 🔥 MONTHLY ROOMS CHARGE
+$monthlyRoomsCharge = $db->table('guests')
+    ->selectSum('rate')
+    ->where('status', 'checked_out')
+    ->where('MONTH(check_out_time)', date('m'))
+    ->where('YEAR(check_out_time)', date('Y'))
+    ->get()
+    ->getRow()
+    ->rate ?? 0;
 
     $recentBills = $db->table('payments p')
         ->select('p.id, g.name, g.room_no, p.amount, p.status , p.checkout_receptionist')
@@ -80,7 +99,8 @@ $occupiedRooms = $db->table('guests')
         'todayCheckouts' => $todayCheckouts, 
             'todayRevenue' => $todayRevenue,
             'monthlyRevenue' => $monthlyRevenue,
-          
+           'todayRoomsCharge' => $todayRoomsCharge,
+    'monthlyRoomsCharge' => $monthlyRoomsCharge,
             // 'checkout_receptionist' => $checkout_receptionist,
         ],
         'recentBills' => $recentBills,

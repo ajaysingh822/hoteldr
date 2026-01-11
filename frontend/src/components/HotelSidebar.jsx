@@ -1,34 +1,31 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   PlusCircle,
   ClipboardCheck,
-  CreditCard,
   LogOut,
   Menu,
   X,
 } from "lucide-react";
 
 export default function HotelSidebar() {
-
   const location = useLocation();
   const navigate = useNavigate();
+
   const [rooms, setRooms] = useState([]);
-    const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      fetch("/api/dashboard")   // 👈 SAME API
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            setRooms(data.occupied_rooms || []);
-          }
-        })
-        .catch(console.error)
-        .finally(() => setLoading(false));
-    }, []);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/dashboard")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          setRooms(data.occupied_rooms || []);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -62,7 +59,7 @@ export default function HotelSidebar() {
 
   return (
     <>
-      {/* 🔹 Mobile top button */}
+      {/* Mobile menu button */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setOpen(true)}
@@ -72,7 +69,7 @@ export default function HotelSidebar() {
         </button>
       </div>
 
-      {/* 🔹 Overlay (mobile) */}
+      {/* Overlay */}
       {open && (
         <div
           className="fixed inset-0 bg-black/40 z-40 md:hidden"
@@ -80,7 +77,7 @@ export default function HotelSidebar() {
         />
       )}
 
-      {/* 🔹 Sidebar */}
+      {/* Sidebar */}
       <div
         className={`
           fixed top-0 left-0 z-50
@@ -91,15 +88,14 @@ export default function HotelSidebar() {
         `}
       >
         {/* Header */}
-        <div className="p-6 border-b border-amber-900 flex items-center justify-between">
+        <div className="p-5 border-b border-amber-900 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🏨</span>
-            <span className="font-bold text-lg text-white">
-            DR Hotel Billing
+            <span className="text-xl">🏨</span>
+            <span className="font-bold text-white">
+              DR Hotel Billing
             </span>
           </div>
 
-          {/* Close (mobile) */}
           <button
             className="md:hidden text-white"
             onClick={() => setOpen(false)}
@@ -109,76 +105,81 @@ export default function HotelSidebar() {
         </div>
 
         {/* Menu */}
-
-        <nav className="flex-1 p-4 space-y-2">
-          
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <Link
-             key={item.path}
+              key={item.path}
               to={item.path}
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors
                 ${
                   isActive(item.path)
-                    ? "bg-red-700 text-white shadow-md"
+                    ? "bg-red-700 text-white"
                     : "text-amber-200 hover:bg-amber-900 hover:text-white"
                 }
               `}
             >
-              <item.icon size={20} />
-              <span className="font-medium">{item.name}</span>
+              <item.icon size={18} />
+              <span className="text-sm font-medium">{item.name}</span>
             </Link>
           ))}
-          <div><h6 className="text-xl font-bold text-amber-900 mb-2">
-          🔴 Occupied Rooms
-        </h6>
-        {/* rooms.length === 0 ? (
-          <p className="text-gray-500">No occupied rooms</p>
-        ) : ( */}
-          <div className="grid mx-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-1">
-            {rooms.map((r, i) => (
-              <div
-                key={i}
-                className="bg-red-900 text-white rounded-xl shadow
-                           flex items-center justify-center
-                           h-4  font-bold py-3 hover:translate-x-1 " 
-              >
-               {r.room_no}
-              </div>
-            ))}
+
+          {/* Occupied Rooms */}
+          <div className="mt-4">
+            <h6 className="text-xs font-bold text-amber-300 mb-2">
+              🔴 Occupied Rooms
+            </h6>
+
+            <div className="grid grid-cols-4 gap-1">
+              {rooms.map((r, i) => (
+                <div
+                  key={i}
+                  className="bg-red-900 text-white rounded
+                             flex items-center justify-center
+                             text-[11px] font-bold py-1"
+                >
+                  {r.room_no}
+                </div>
+              ))}
+            </div>
           </div>
-        
-        
-        </div>
         </nav>
-       
-        {/* Logout */}
-        <div className="p-5 border-t border-amber-900">
-           <nav className="flex-1 p-4 space-y-2">
-            <Link
-              to={"/restaurant-dashboard"}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-2  py-2 rounded-lg transition-colors
-                ${
-                  isActive()
-                    ? "bg-red-700 text-white shadow-md"
-                    : "text-amber-200 hover:bg-amber-900 hover:text-white"
-                }
-              `}
-            >
-              <LayoutDashboard size={20} />
-              <span className="font-medium">Go to Restaurent</span>
-            </Link>
-        
-        </nav>
+
+        {/* Bottom actions */}
+        <div className="border-t border-amber-900 p-3 space-y-1">
+          <Link
+            to="/restaurant-dashboard"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-md
+                       text-amber-200 hover:bg-amber-900 hover:text-white"
+          >
+            <LayoutDashboard size={18} />
+            <span className="text-sm">Go to Restaurant</span>
+          </Link>
+
           <button
             onClick={logout}
-            className="flex w-full items-center gap-3 px-4 py-3 rounded-lg
-                       text-amber-300 hover:bg-amber-900 hover:text-white transition-colors"
+            className="flex w-full items-center gap-3 px-3 py-2 rounded-md
+                       text-amber-300 hover:bg-amber-900 hover:text-white"
           >
-            <LogOut size={20} />
-            <span className="font-medium">Logout</span>
+            <LogOut size={18} />
+            <span className="text-sm">Logout</span>
           </button>
+        </div>
+
+        {/* 🔻 FOOTER (exact screenshot style) */}
+        <div className="mt-auto border-t border-amber-900 px-3 py-2
+                        text-[11px] text-amber-400 flex justify-between">
+          <span>
+            Copyright ©{" "}
+            <span className="text-amber-300 font-medium">
+              DR Hotel And Restaurent
+            </span>
+            . All rights reserved.
+          </span>
+          <span className="text-amber-500">
+            Version 3.2.0
+          </span>
         </div>
       </div>
     </>

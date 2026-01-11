@@ -22,30 +22,34 @@ $routes->setAutoRoute(false);
 
 // ================= AUTH =================
 $routes->post('api/login', 'AuthController::login');
-
+    $routes->post('api/admin/login', 'AdminController::login');
+    $routes->post('api/admin/logout', 'AdminController::logout');
+    $routes->get('me', 'AdminController::me');
 
 // ============ HOTEL (AUTH REQUIRED) ============
 $routes->group('api', ['filter' => 'auth'], function ($routes) {
 
     $routes->get('/', 'Home::index');
 
-  $routes->get('admin/total-sale', 'AdminController::totalSale');
+  $routes->get('admin/total-sale', 'AuthController::totalSale');
+$routes->post('admin/change-password', 'AuthController::changePassword');
 
-    $routes->post('api/admin/login', 'AdminController::login');
-    $routes->post('api/admin/logout', 'AdminController::logout');
-    $routes->get('me', 'AdminController::me');
+// $routes->get('admin/counters', 'AdminController::counters');
 
 
 // ============ RESTAURANT (NO AUTH) ============
-$routes->post('api/payment/save', 'PaymentController::save');
-$routes->get('api/payment/history', 'PaymentController::history');
+$routes->post('payment/save', 'PaymentController::save');
+$routes->get('payment/history', 'PaymentController::history');
 
 
 // RESTAURANT HISTORY (NO AUTH)
-$routes->get('api/restaurant/history', 'RestaurantHistoryController::index');
+$routes->get('restaurant/history', 'RestaurantHistoryController::index');
 // RESTAURANT HISTORY
-$routes->get('api/restaurant/payments', 'PaymentController::all');
-$routes->get('api/restaurant/payments/today', 'PaymentController::today');
+$routes->get('restaurant/payments', 'PaymentController::all');
+$routes->get('restaurant/payments/today', 'PaymentController::today');
+$routes->get('extra-charges/today-grand', 'ExtraChargeController::todayGrandTotal');
+$routes->get('extra-charges/month-grand', 'ExtraChargeController::monthGrandTotal');
+$routes->get('extra-charges/range-grand', 'ExtraChargeController::rangeGrandTotal');
 
 
 
@@ -62,4 +66,8 @@ $routes->get('api/restaurant/payments/today', 'PaymentController::today');
     $routes->get('extra-charges/(:num)', 'ExtraChargeController::getByGuest/$1');
     $routes->delete('extra-charges/(:num)', 'ExtraChargeController::delete/$1');
     $routes->get('history/(:num)', 'HistoryController::view/$1');
+      $routes->get('extra-charges/today', 'ExtraChargeController::todayTotal');
+    $routes->get('extra-charges/month', 'ExtraChargeController::monthTotal');
+    $routes->get('api/extra-charges/range', 'ExtraChargesController::rangeTotal');
+
 });

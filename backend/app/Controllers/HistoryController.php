@@ -99,6 +99,10 @@ class HistoryController extends BaseController
             ? base_url('uploads/ids/' . $guest['id_image'])
             : null;
 
+              $imageUrl2 = !empty($guest['id_image2'])
+            ? base_url('uploads/ids2/' . $guest['id_image2'])
+            : null;
+
         if (!$guest && !empty($members)) {
             $guest = [
                 'id' => $guestId,
@@ -149,7 +153,14 @@ class HistoryController extends BaseController
             ->get()
             ->getRow()
             ->amount ?? 0;
-
+// Extra charges list (IMPORTANT FIX)
+$charges = $db->table('extra_charges')
+    ->select('title, amount')
+    ->where('guest_id', $guestId)
+    ->get()
+    ->getResultArray();
+// log_message('error', 'FRONT URL: ' . $imageUrl);
+// log_message('error', 'BACK  URL: ' . $imageUrl2);
         // Room + grand total
         $roomTotal  = $guest['rate'] * $days;
         $grandTotal = $roomTotal + $extraTotal;
@@ -165,6 +176,8 @@ class HistoryController extends BaseController
                 'members' => $guest['members'],
                 'vehicle_no' => $guest['vehicle_no'],
                 'rate' => $guest['rate'],
+// 'id_image'  => $guest['id_image'],
+// 'id_image2' => $guest['id_image2'],
 
                 'days' => $days,
                 'room_total' => $roomTotal,
@@ -174,10 +187,12 @@ class HistoryController extends BaseController
                 'total_paid' => $totalPaid,
 
                 'id_image_url' => $imageUrl,
+                'id_image_url2' => $imageUrl2,
                 'check_in_time' => $guest['check_in_time'],
                 'check_out_time' => $guest['check_out_time'],
             ],
-            'charges' => [],
+            'charges' => $charges,
+
                'members_list' => $members
         ]);
     }
