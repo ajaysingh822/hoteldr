@@ -6,7 +6,9 @@ export default function RestaurantHistory() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/restaurant/payments/today")
+    fetch(`${process.env.REACT_APP_API_URL}/api/restaurant/payments/today`,{
+      credentials : "include"
+    })
       .then((res) => res.json())
       .then((data) => {
         // 🔥 MAIN FIX: sirf ARRAY hi state me jaayega

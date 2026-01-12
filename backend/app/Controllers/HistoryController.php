@@ -158,8 +158,8 @@ $charges = $db->table('extra_charges')
     ->select('title, amount')
     ->where('guest_id', $guestId)
     ->get()
-    ->getResultArray();
-// log_message('error', 'FRONT URL: ' . $imageUrl);
+    ->getResultArray(); 
+ // log_message('error', 'FRONT URL: ' . $imageUrl);
 // log_message('error', 'BACK  URL: ' . $imageUrl2);
         // Room + grand total
         $roomTotal  = $guest['rate'] * $days;

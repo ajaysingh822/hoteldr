@@ -6,7 +6,9 @@ export default function Roomnumber() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/dashboard")   // 👈 SAME API
+    fetch(`${process.env.REACT_APP_API_URL}/api/dashboard`,{
+      credentials: "include",
+    })   // 👈 SAME API
       .then(res => res.json())
       .then(data => {
         if (data.status === "success") {
@@ -18,7 +20,7 @@ export default function Roomnumber() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-amber-50">
+    <div className="flex min-h-screen bg-amber-50 bg-cover"  style={{ backgroundImage: "url('/bg3.png')" }}>
       <AdminSidebar />
 
       <div className="flex-1 md:ml-64 p-5 md:p-6 pb-20">

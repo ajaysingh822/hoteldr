@@ -3,6 +3,8 @@ import HotelSidebar from "../../components/HotelSidebar";
 import { toast } from "react-hot-toast";
 
 export default function HotelCheckIn() {
+  const frontendBase = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
+
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [members, setMembers] = useState(1);
@@ -68,7 +70,7 @@ const [idImage2, setIdImage2] = useState(null); // 🔥 ADD (ID BACK)
       if (memberDetails.length > 0) {
         formData.append("member_details", JSON.stringify(memberDetails));
       } 
-         const res = await fetch("/api/check-in", {
+         const res = await fetch(`${process.env.REACT_APP_API_URL}/api/check-in`, {
       method: "POST",
       credentials: "include",
       body: formData, // ✅ FormData direct
@@ -107,7 +109,9 @@ useEffect(() => {
   if (!qrToken) return;
 
   const i = setInterval(async () => {
-    const res = await fetch(`/api/qr-status/${qrToken}`);
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/qr-status/${qrToken}`,{
+      credentials : "include" 
+    });
     const data = await res.json();
 
     if (data.image_url) {
@@ -268,7 +272,7 @@ useEffect(() => {
             </div>
 
             {/* 🔥 ID IMAGE – ONLY CHANGE HERE */}
-            <div>
+            {/* <div>
               <label className="block mb-1 font-medium">
                 Upload ID Proof
               </label>
@@ -280,7 +284,7 @@ useEffect(() => {
               >
                 {idImage ? "✅ ID Selected" : "Choose Upload Method"}
               </button>
-            </div>
+            </div> */}
 
             {/* ID Number */}
             <div>
@@ -333,74 +337,8 @@ useEffect(() => {
       </div>
 
       {/* 🔹 UPLOAD OPTION MODAL */}
-      {showUploadChoice && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white p-5 rounded-lg w-72">
-            <h3 className="font-semibold mb-4 text-center">
-              Select ID Upload Option
-            </h3>
-
-            {/* LOCAL UPLOAD */}
-            <label className="block w-full mb-3 bg-gray-200 text-center py-2 rounded-lg cursor-pointer">
-              📁 Upload from Device
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => {
-                  setIdImage(e.target.files[0]);
-                  
-                }}
-              /></label>
-              {/* 🔥 ADD – ID BACK */}
-<label className="block w-full mb-3 bg-gray-200 text-center py-2 rounded-lg cursor-pointer">
-  📁 Upload ID Back
-  <input
-    type="file"
-    accept="image/*"
-    hidden
-    onChange={(e) => {
-      setIdImage2(e.target.files[0]);
-      
-    }}
-  />
-</label>
-
-            
-
-            {/* QR OPTION */}
-            <button
-              type="button"
-onClick={async () => {
-  const res = await fetch("/api/qr-generate");
-  const data = await res.json();
-
-  const frontendBase = window.location.origin; // 🔥 React URL
-  const url = `${frontendBase}/upload-id/${data.token}`;
-
-  setQrToken(data.token);
-  setQrUrl(url);
-  setShowUploadChoice(false);
-  setShowQR(true);
-}}
-
-
-              className="w-full bg-black text-white py-2 rounded-lg"
-            >
-              📷 Upload via QR
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowUploadChoice(false)}
-              className="mt-4 text-sm text-red-600 w-full"
-            >
-              submit
-            </button>
-          </div>
-        </div>
-      )}
-    {showQR && qrUrl && (
+    
+    {/* {showQR && qrUrl && (
   <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
     <div className="bg-white p-5 rounded-lg w-72 text-center">
       <h3 className="font-semibold mb-3">Guest ID Upload QR</h3>
@@ -419,7 +357,7 @@ onClick={async () => {
       </button>
     </div>
   </div>
-)}
+)} */}
 
 
     </div>

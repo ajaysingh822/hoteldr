@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function UploadId() {
-  const { token } = useParams();
+export default function HotelUploadId() {
+  const { guestId } = useParams();
+  const navigate = useNavigate();
   const [f1, setF1] = useState(null);
   const [f2, setF2] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,24 +22,29 @@ export default function UploadId() {
     setLoading(true);
 
     const res = await fetch(
-      `${process.env.REACT_APP_API_URL}/api/qr-upload/${token}`,
-      { method: "POST", body: fd }
+      `${process.env.REACT_APP_API_URL}/api/guest/upload-id/${guestId}`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      }
     );
 
     const data = await res.json();
     setLoading(false);
 
     if (data.status === "success") {
-      toast.success("ID uploaded successfully");
+      toast.success("ID saved");
+      navigate(-1);
     } else {
-      toast.error(data.message || "Upload failed");
+      toast.error("Upload failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white p-6 rounded shadow w-80">
-        <h2 className="font-bold mb-4 text-center">Upload ID</h2>
+        <h2 className="font-bold mb-4 text-center">Upload Guest ID</h2>
 
         <input type="file" onChange={e => setF1(e.target.files[0])} />
         <p className="text-xs">Front</p>

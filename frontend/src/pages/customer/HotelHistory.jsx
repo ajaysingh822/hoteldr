@@ -16,7 +16,9 @@ export default function HotelHistory() {
   useEffect(() => {
     setLoading(true);
 
-    fetch(`/api/history?page=${page}&q=${query}&date=${date}`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/history?page=${page}&q=${query}&date=${date}` ,{
+      credentials : "include"
+    })
       .then(res => res.json())
       .then(data => {
         setRows(Array.isArray(data.rows) ? data.rows : []);
@@ -27,7 +29,7 @@ export default function HotelHistory() {
         setPages(1);
       })
       .finally(() => setLoading(false));
-  }, [page, query, date]);
+  }, [page, query, date]); 
 
   return (
     <div className="flex">

@@ -10,11 +10,11 @@ export default function AdminRestaurant() {
   const [to, setTo] = useState("");
 
   useEffect(() => {
-    fetch("/api/extra-charges/today-grand")
+    fetch(`${process.env.REACT_APP_API_URL}/api/extra-charges/today-grand`)
       .then(r => r.json())
       .then(d => d.status === "success" && setToday(d.grand_total || 0));
 
-    fetch("/api/extra-charges/month-grand")
+    fetch(`${process.env.REACT_APP_API_URL}/api/extra-charges/month-grand`)
       .then(r => r.json())
       .then(d => d.status === "success" && setMonth(d.grand_total || 0));
   }, []);
@@ -22,17 +22,19 @@ export default function AdminRestaurant() {
   const fetchRange = () => {
     if (!from || !to) return;
 
-    fetch(`/api/extra-charges/range-grand?from=${from}&to=${to}`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/extra-charges/range-grand?from=${from}&to=${to}`,{
+      credentials : "include"
+    })
       .then(r => r.json())
       .then(d => d.status === "success" && setRangeTotal(d.grand_total || 0));
   };
 
   return (
-    <div className="flex min-h-screen bg-amber-50">
+    <div className="flex min-h-screen bg-amber-50 bg-cover"  style={{ backgroundImage: "url('/bg3.png')" }}>
       <AdminSidebar />
 
       <div className="flex-1 md:ml-64 p-6 pb-20">
-        <h1 className="text-2xl font-bold mb-6">
+        <h1 className="text-2xl font-bold text-white mb-6">
           🍽️ Restaurant Dashboard
         </h1>
 

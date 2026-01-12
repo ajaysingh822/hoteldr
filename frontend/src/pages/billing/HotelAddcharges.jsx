@@ -44,7 +44,8 @@ export default function HotelAddCharges() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/extra-charges/bulk", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/extra-charges/bulk`, {
+        credentials : "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -6,7 +6,9 @@ export default function HotelDashboard() {
   const [bills, setBills] = useState([]);
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    fetch(`${process.env.REACT_APP_API_URL}/api/dashboard`,{
+      credentials : "include"
+    })
       .then(res => res.json())
       .then(data => {
         if (data.status === "success") {

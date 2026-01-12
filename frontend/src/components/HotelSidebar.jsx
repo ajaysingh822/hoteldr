@@ -17,7 +17,9 @@ export default function HotelSidebar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    fetch(`${process.env.REACT_APP_API_URL}/api/dashboard`,{
+      credentials: "include",
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -175,8 +177,10 @@ export default function HotelSidebar() {
             <span className="text-amber-300 font-medium">
               DR Hotel And Restaurent
             </span>
-            . All rights reserved.
+            . All rights reserved. 
           </span>
+          <span>Help 💬: 9343185294 , 8224950286
+</span>
           <span className="text-amber-500">
             Version 3.2.0
           </span>

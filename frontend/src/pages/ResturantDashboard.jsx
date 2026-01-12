@@ -83,7 +83,8 @@ export default function RestaurantDashboard() {
     };
 
     try {
-      const res = await fetch("/api/payment/save", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/payment/save`, {
+        credentials : "include" ,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

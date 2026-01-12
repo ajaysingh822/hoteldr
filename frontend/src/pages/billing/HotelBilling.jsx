@@ -18,7 +18,7 @@ export default function HotelBilling() {
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
-    fetch(`/api/guest/${id}`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/guest/${id}`)
       .then(res => res.json())
       .then(data => {
         setGuest({
@@ -55,7 +55,8 @@ export default function HotelBilling() {
   }
     setLoading(true);
 
-    const res = await fetch(`/api/checkout/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/checkout/${id}`, {
+      credentials : "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -98,16 +99,7 @@ export default function HotelBilling() {
   });
 }}
 
-//        {
-//     navigate("/hotel/check-out", {
-      
-//   state: { checkoutSuccess: true }
-// });
 
-//     } else {
-//       alert("Payment failed");
-//     }
-//   };
 
   /* ================= UI ================= */
   return (

@@ -8,7 +8,9 @@ export default function HotelHistoryDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/history/${billId}`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/history/${billId}`,{
+      credentials :"include",
+    })
       .then(res => res.json())
       .then(d => {
         if (d.status === "success") {

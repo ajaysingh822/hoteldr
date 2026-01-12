@@ -25,13 +25,14 @@ import HotelHistory from "./pages/customer/HotelHistory.jsx";
 import HotelHistoryDetail from "./pages/customer/HotelHistoryDetails.jsx";
 import BillPrint from "./pages/billing/BillPrint.jsx";
 import AdminRestaurant from "./pages/AdminRestaurent.jsx";
-import UploadId from "./pages/customer/UploadId.jsx";
+// import UploadId from "./pages/customer/UploadId.jsx";
 import RestaurantSidebar from "./components/ResturantSidebar.jsx";
 import RestaurantHistory from "./pages/customer/RestaurantHistory.jsx";
 import Roomnumber from "./pages/Roomnumber.jsx";
 import RestaurantBillPrint from "./pages/billing/RestaurantBillPrint.jsx";
 import AdminChangePassword from "./components/AdminChangePassword.jsx";
-
+import HotelUploadId from "./pages/customer/HotelUploadId.jsx";
+import UploadId from "./pages/customer/UploadId.jsx";
 export default function App() {
   const loggedIn = localStorage.getItem("counter_logged_in") === "true";
 
@@ -96,7 +97,9 @@ export default function App() {
       <Route path="/hotel/check-out" element={<HotelCheckOut />} />
          <Route path="/hotel/billing/:id" element={<HotelBilling />} />
       {/* <Route path="/billing/restaurant" element={<RestaurantBilling />} /> */}
-   
+    {/* idRoutes */}
+ <Route path="/hotel/upload-id/:guestId" element={<HotelUploadId/>} />
+ <Route path="/upload-id/:token" element={<UploadId/>} />
  <Route path="/hotel/charges/:id" element={<HotelAddCharges />} />
 <Route path="/hotel-dashboard" element={<HotelDashboard />} />
 <Route path= "/hotel/history" element={<HotelHistory/>} />

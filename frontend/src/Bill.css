@@ -3,6 +3,15 @@
   display: flex;
   justify-content: center;
 }
+.bill-logo {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.bill-logo img {
+  max-width: 70mm;   /* 58mm printer ke liye perfect */
+  height: auto;
+}
 
 /* ===== RECEIPT (THERMAL) ===== */
 .receipt {
